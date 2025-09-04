@@ -35,24 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Cambiar tema
-            document.getElementById('themeSelect').addEventListener('change', function() {
-                const theme = this.value;
-                document.body.className = ''; // Eliminar clases existentes
-                if (theme !== 'default') {
-                    document.body.classList.add(theme);
-                }
-                localStorage.setItem('theme', theme); // Guardar tema en localStorage
-            });
-            
-            // Aplicar tema guardado al cargar la página
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                document.getElementById('themeSelect').value = savedTheme;
-                if (savedTheme !== 'default') {
-                    document.body.classList.add(savedTheme);
-                }
-            }
             
             // Sistema de pestañas
             document.querySelectorAll('.tab').forEach(tab => {
