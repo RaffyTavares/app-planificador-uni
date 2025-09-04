@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador Universitario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i> Planificador Universitario
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <aside class="sidebar">
+                <h2 class="card-title"><i class="fas fa-book"></i> Mis Materias</h2>
+                <form id="materiaForm">
+                    <div class="form-group">
+                        <label for="materiaNombre">Nombre de la materia</label>
+                        <input type="text" id="materiaNombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="materiaProfesor">Profesor</label>
+                        <input type="text" id="materiaProfesor">
+                    </div>
+                    <div class="form-group">
+                        <label for="materiaCreditos">Créditos</label>
+                        <input type="number" id="materiaCreditos" min="1">
+                    </div>
+                    <button type="submit" class="btn">Agregar Materia</button>
+                </form>
+
+                <div class="materias-list" id="materiasList">
+                    <!-- Las materias se agregarán aquí dinámicamente -->
+                </div>
+
+                <div class="upcoming-classes">
+                    <div class="upcoming-title">
+                        Próximas clases
+                        <!-- AÑADE ESTE BOTÓN -->
+                        <button id="syncClassesBtn" class="action-btn" title="Actualizar estado">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div id="proximasClases">
+                        <!-- Las próximas clases se agregarán aquí dinámicamente -->
+                    </div>
+                </div>
+            </aside>
+
+            <main class="content">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-chalkboard-teacher"></i> Gestión de Clases</h2>
+                    
+                    <div class="tabs">
+                        <div class="tab active" data-tab="clases">Registrar Clases</div>
+                        <div class="tab" data-tab="horario">Mi Horario</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="clasesTab">
+                        <form id="claseForm">
+                            <div class="form-group">
+                                <label for="claseMateria">Materia</label>
+                                <select id="claseMateria" required>
+                                    <option value="">Selecciona una materia</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="claseDia">Día de la semana</label>
+                                <select id="claseDia" required>
+                                    <option value="">Selecciona un día</option>
+                                    <option value="Lunes">Lunes</option>
+                                    <option value="Martes">Martes</option>
+                                    <option value="Miércoles">Miércoles</option>
+                                    <option value="Jueves">Jueves</option>
+                                    <option value="Viernes">Viernes</option>
+                                    <option value="Sábado">Sábado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="claseHora">Hora de inicio</label>
+                                <input type="time" id="claseHora" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="claseDuracion">Duración (minutos)</label>
+                                <input type="number" id="claseDuracion" min="30" value="90">
+                            </div>
+                            <div class="form-group">
+                                <label for="claseAula">Aula/Lugar</label>
+                                <input type="text" id="claseAula">
+                            </div>
+                            <button type="submit" class="btn">Agregar Clase</button>
+                        </form>
+                    </div>
+                    
+                    <div class="tab-content" id="horarioTab">
+                        <div class="clases-list" id="clasesList">
+                            <!-- Las clases se agregarán aquí dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-tasks"></i> Tareas y Recordatorios</h2>
+                    <!-- INICIO DE LA MODIFICACIÓN PARA TAREAS -->
+                    <div class="tabs">
+                        <div class="tab active" data-tab="agregar-tarea">Agregar Tarea</div>
+                        <div class="tab" data-tab="ver-tareas">Ver Tareas</div>
+                    </div>
+
+                    <div class="tab-content active" id="agregar-tareaTab">
+                        <form id="tareaForm">
+                            <div class="form-group">
+                                <label for="tareaDescripcion">Descripción de la tarea</label>
+                                <input type="text" id="tareaDescripcion" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tareaMateria">Materia</label>
+                                <select id="tareaMateria">
+                                    <option value="">General</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="tareaFecha">Fecha de entrega</label>
+                                <input type="date" id="tareaFecha" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tareaPrioridad">Prioridad</label>
+                                <select id="tareaPrioridad">
+                                    <option value="alta">Alta</option>
+                                    <option value="media" selected>Media</option>
+                                    <option value="baja">Baja</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn">Agregar Tarea</button>
+                        </form>
+                    </div>
+
+                    <div class="tab-content" id="ver-tareasTab">
+                        <div class="tareas-list" id="tareasList">
+                            <!-- Las tareas se agregarán aquí dinámicamente -->
+                        </div>
+                    </div>
+                    <!-- FIN DE LA MODIFICACIÓN PARA TAREAS -->
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-sticky-note"></i> Anotaciones Importantes</h2>
+                    <!-- INICIO DE LA MODIFICACIÓN PARA ANOTACIONES -->
+                    <div class="tabs">
+                        <div class="tab active" data-tab="nueva-anotacion">Nueva Anotación</div>
+                        <div class="tab" data-tab="ver-anotaciones">Ver Anotaciones</div>
+                    </div>
+
+                    <div class="tab-content active" id="nueva-anotacionTab">
+                        <form id="anotacionForm">
+                            <div class="form-group">
+                                <label for="anotacionTitulo">Título</label>
+                                <input type="text" id="anotacionTitulo" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="anotacionContenido">Contenido</label>
+                                <textarea id="anotacionContenido" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="anotacionMateria">Materia (opcional)</label>
+                                <select id="anotacionMateria">
+                                    <option value="">General</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn">Guardar Anotación</button>
+                        </form>
+                    </div>
+
+                    <div class="tab-content" id="ver-anotacionesTab">
+                        <div class="anotaciones-list" id="anotacionesList">
+                            <!-- Las anotaciones se agregarán aquí dinámicamente -->
+                        </div>
+                    </div>
+                    <!-- FIN DE LA MODIFICACIÓN PARA ANOTACIONES -->
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-history"></i> Historial</h2>
+                    <div class="tabs">
+                        <div class="tab active" data-tab="historial-tareas">Tareas Completadas</div>
+                        <div class="tab" data-tab="historial-clases">Clases Pasadas</div>
+                    </div>
+                    <div class="tab-content active" id="historial-tareasTab">
+                        <div class="historial-list" id="historialTareasList">
+                            <!-- Las tareas completadas se agregarán aquí dinámicamente -->
+                        </div>
+                    </div>
+                    <div class="tab-content" id="historial-clasesTab">
+                        <div class="historial-list" id="historialClasesList">
+                            <!-- Las clases pasadas se agregarán aquí dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-bell"></i>
+        <span id="notificationText"></span>
+    </div>
+
+    <div class="theme-selector">
+        <label for="themeSelect">Seleccionar tema:</label>
+        <select id="themeSelect">
+            <option value="default">Predeterminado</option>
+            <option value="theme-blue">Azul</option>
+            <option value="theme-green">Verde</option>
+            <option value="theme-red">Rojo</option>
+        </select>
+    </div>
+</body>
+<script src="app.js"></script>
+</html>
