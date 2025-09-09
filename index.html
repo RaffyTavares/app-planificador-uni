@@ -1,20 +1,41 @@
+<!--
+    ********************************************************************************
+    *                                                                              *
+    *                           PLANIFICADOR UNIVERSITARIO                         *
+    *                Estructura principal de la página (HTML5)                     *
+    *                                                                              *
+    ********************************************************************************
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos básicos para el navegador -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planificador Universitario</title>
+
+    <!-- Enlaces a hojas de estilo y favicon -->
+    <!-- Font Awesome para iconos (ej. <i class="fas fa-book"></i>) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Hoja de estilos principal de la aplicación -->
     <link rel="stylesheet" href="styles.css">
+    <!-- Favicon para la pestaña del navegador -->
     <link rel="icon" href="unad.jpeg" type="image/x-icon">
 </head>
 <body>
+
+    <!-- ==========================================================================
+         ENCABEZADO PRINCIPAL (HEADER)
+         Contiene el logo de la aplicación y el botón para cambiar el tema (oscuro/claro).
+    =========================================================================== -->
     <header>
         <div class="container">
             <div class="header-content">
+                <!-- Logo y título de la aplicación -->
                 <div class="logo">
                     <i class="fas fa-graduation-cap"></i> Planificador Universitario
                 </div>
+                <!-- Botón para alternar entre modo claro y oscuro -->
                 <button class="theme-toggle" id="themeToggle">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -22,10 +43,22 @@
         </div>
     </header>
 
+    <!-- ==========================================================================
+         CONTENEDOR PRINCIPAL DE LA APLICACIÓN
+         Utiliza un layout de grid para dividir la página en una barra lateral y el contenido principal.
+    =========================================================================== -->
     <div class="container">
         <div class="main-content">
+
+            <!-- ==========================================================================
+                 BARRA LATERAL (ASIDE)
+                 Contiene el formulario para agregar materias, la lista de materias y las próximas clases.
+            =========================================================================== -->
             <aside class="sidebar">
+                <!-- Título de la sección de materias -->
                 <h2 class="card-title"><i class="fas fa-book"></i> Mis Materias</h2>
+                
+                <!-- Formulario para agregar una nueva materia -->
                 <form id="materiaForm">
                     <div class="form-group">
                         <label for="materiaNombre">Nombre de la materia</label>
@@ -42,33 +75,44 @@
                     <button type="submit" class="btn">Agregar Materia</button>
                 </form>
 
+                <!-- Contenedor donde se mostrarán dinámicamente las materias agregadas -->
                 <div class="materias-list" id="materiasList">
-                    <!-- Las materias se agregarán aquí dinámicamente -->
+                    <!-- Las materias se generan con JavaScript -->
                 </div>
 
+                <!-- Sección para mostrar las clases que ocurrirán pronto -->
                 <div class="upcoming-classes">
                     <div class="upcoming-title">
                         Próximas clases
-                        <!-- AÑADE ESTE BOTÓN -->
+                        <!-- Botón para actualizar manualmente el estado de las clases -->
                         <button id="syncClassesBtn" class="action-btn" title="Actualizar estado">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
+                    <!-- Contenedor donde se mostrarán las próximas clases -->
                     <div id="proximasClases">
-                        <!-- Las próximas clases se agregarán aquí dinámicamente -->
+                        <!-- Las clases próximas se generan con JavaScript -->
                     </div>
                 </div>
             </aside>
 
+            <!-- ==========================================================================
+                 CONTENIDO PRINCIPAL (MAIN)
+                 Organizado en tarjetas (cards) para gestionar clases, tareas, anotaciones e historial.
+            =========================================================================== -->
             <main class="content">
+
+                <!-- TARJETA 1: GESTIÓN DE CLASES -->
                 <div class="card">
                     <h2 class="card-title"><i class="fas fa-chalkboard-teacher"></i> Gestión de Clases</h2>
                     
+                    <!-- Pestañas para alternar entre registrar clases y ver el horario -->
                     <div class="tabs">
                         <div class="tab active" data-tab="clases">Registrar Clases</div>
                         <div class="tab" data-tab="horario">Mi Horario</div>
                     </div>
                     
+                    <!-- Contenido de la pestaña "Registrar Clases" -->
                     <div class="tab-content active" id="clasesTab">
                         <form id="claseForm">
                             <div class="form-group">
@@ -87,7 +131,6 @@
                                     <option value="Jueves">Jueves</option>
                                     <option value="Viernes">Viernes</option>
                                     <option value="Sábado">Sábado</option>
-                                    <option value="Domingo">Domingo</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -106,21 +149,25 @@
                         </form>
                     </div>
                     
+                    <!-- Contenido de la pestaña "Mi Horario" -->
                     <div class="tab-content" id="horarioTab">
                         <div class="clases-list" id="clasesList">
-                            <!-- Las clases se agregarán aquí dinámicamente -->
+                            <!-- El horario de clases se genera con JavaScript -->
                         </div>
                     </div>
                 </div>
 
+                <!-- TARJETA 2: GESTIÓN DE TAREAS Y RECORDATORIOS -->
                 <div class="card">
                     <h2 class="card-title"><i class="fas fa-tasks"></i> Tareas y Recordatorios</h2>
-                    <!-- INICIO DE LA MODIFICACIÓN PARA TAREAS -->
+                    
+                    <!-- Pestañas para alternar entre agregar y ver tareas -->
                     <div class="tabs">
                         <div class="tab active" data-tab="agregar-tarea">Agregar Tarea</div>
                         <div class="tab" data-tab="ver-tareas">Ver Tareas</div>
                     </div>
 
+                    <!-- Contenido de la pestaña "Agregar Tarea" -->
                     <div class="tab-content active" id="agregar-tareaTab">
                         <form id="tareaForm">
                             <div class="form-group">
@@ -149,22 +196,25 @@
                         </form>
                     </div>
 
+                    <!-- Contenido de la pestaña "Ver Tareas" -->
                     <div class="tab-content" id="ver-tareasTab">
                         <div class="tareas-list" id="tareasList">
-                            <!-- Las tareas se agregarán aquí dinámicamente -->
+                            <!-- La lista de tareas se genera con JavaScript -->
                         </div>
                     </div>
-                    <!-- FIN DE LA MODIFICACIÓN PARA TAREAS -->
                 </div>
 
+                <!-- TARJETA 3: GESTIÓN DE ANOTACIONES -->
                 <div class="card">
                     <h2 class="card-title"><i class="fas fa-sticky-note"></i> Anotaciones Importantes</h2>
-                    <!-- INICIO DE LA MODIFICACIÓN PARA ANOTACIONES -->
+                    
+                    <!-- Pestañas para alternar entre nueva y ver anotaciones -->
                     <div class="tabs">
                         <div class="tab active" data-tab="nueva-anotacion">Nueva Anotación</div>
                         <div class="tab" data-tab="ver-anotaciones">Ver Anotaciones</div>
                     </div>
 
+                    <!-- Contenido de la pestaña "Nueva Anotación" -->
                     <div class="tab-content active" id="nueva-anotacionTab">
                         <form id="anotacionForm">
                             <div class="form-group">
@@ -185,28 +235,35 @@
                         </form>
                     </div>
 
+                    <!-- Contenido de la pestaña "Ver Anotaciones" -->
                     <div class="tab-content" id="ver-anotacionesTab">
                         <div class="anotaciones-list" id="anotacionesList">
-                            <!-- Las anotaciones se agregarán aquí dinámicamente -->
+                            <!-- La lista de anotaciones se genera con JavaScript -->
                         </div>
                     </div>
-                    <!-- FIN DE LA MODIFICACIÓN PARA ANOTACIONES -->
                 </div>
 
+                <!-- TARJETA 4: HISTORIAL -->
                 <div class="card">
                     <h2 class="card-title"><i class="fas fa-history"></i> Historial</h2>
+                    
+                    <!-- Pestañas para ver tareas completadas y clases pasadas -->
                     <div class="tabs">
                         <div class="tab active" data-tab="historial-tareas">Tareas Completadas</div>
                         <div class="tab" data-tab="historial-clases">Clases Pasadas</div>
                     </div>
+                    
+                    <!-- Contenido de la pestaña "Tareas Completadas" -->
                     <div class="tab-content active" id="historial-tareasTab">
                         <div class="historial-list" id="historialTareasList">
-                            <!-- Las tareas completadas se agregarán aquí dinámicamente -->
+                            <!-- El historial de tareas se genera con JavaScript -->
                         </div>
                     </div>
+                    
+                    <!-- Contenido de la pestaña "Clases Pasadas" -->
                     <div class="tab-content" id="historial-clasesTab">
                         <div class="historial-list" id="historialClasesList">
-                            <!-- Las clases pasadas se agregarán aquí dinámicamente -->
+                            <!-- El historial de clases se genera con JavaScript -->
                         </div>
                     </div>
                 </div>
@@ -214,23 +271,37 @@
         </div>
     </div>
 
+    <!-- ==========================================================================
+         NOTIFICACIÓN EMERGENTE
+         Un pequeño cuadro de diálogo que aparece en la esquina para dar feedback al usuario.
+    =========================================================================== -->
     <div class="notification" id="notification">
         <i class="fas fa-bell"></i>
         <span id="notificationText"></span>
     </div>
 
-    <!-- ===== INICIO: ESTRUCTURA DEL MODAL ===== -->
+    <!-- ==========================================================================
+         MODAL PARA EDICIÓN
+         Una ventana emergente que contendrá formularios para editar clases o tareas.
+         Está oculta por defecto y se muestra con JavaScript.
+    =========================================================================== -->
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
+            <!-- Botón para cerrar el modal -->
             <button id="closeModalBtn" class="modal-close-btn">&times;</button>
+            <!-- Título del modal (ej. "Editar Tarea") -->
             <h2 id="modalTitle" class="card-title"></h2>
+            <!-- Contenedor donde se inyectará el formulario de edición -->
             <div id="modalBody">
-                <!-- El formulario de edición se inyectará aquí -->
+                <!-- El formulario se genera con JavaScript -->
             </div>
         </div>
     </div>
-    <!-- ===== FIN: ESTRUCTURA DEL MODAL ===== -->
 
+    <!-- ==========================================================================
+         SCRIPTS
+         Enlace al archivo JavaScript principal que controla toda la lógica de la aplicación.
+    =========================================================================== -->
+    <script src="app.js"></script>
 </body>
-<script src="app.js"></script>
 </html>
