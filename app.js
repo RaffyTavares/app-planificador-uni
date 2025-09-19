@@ -1,12 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementos del DOM
+    // Elementos del DOM actualizados
     const themeToggle = document.getElementById('themeToggle');
     const notification = document.getElementById('notification');
     const notificationText = document.getElementById('notificationText');
+    const notificationTitle = document.getElementById('notificationTitle');
+    const notificationIcon = document.getElementById('notificationIcon');
+    const notificationClose = document.getElementById('notificationClose');
     const modal = document.getElementById('editModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
     const closeModalBtn = document.getElementById('closeModalBtn');
+    
+    // Contadores para estadísticas
+    const materiasCount = document.getElementById('materiasCount');
+    const pendingTasksCount = document.getElementById('pendingTasksCount');
+    const todayClassesCount = document.getElementById('todayClassesCount');
     
     // Datos de la aplicación
     let materias = JSON.parse(localStorage.getItem('materias')) || [];
@@ -21,40 +29,59 @@ document.addEventListener('DOMContentLoaded', function() {
         renderClases();
         renderTareas();
         renderAnotaciones();
-        renderHistorialTareas(); // Renderizar historial de tareas
-        renderHistorialClases(); // Renderizar historial de clases
+        renderHistorialTareas();
+        renderHistorialClases();
+        updateCounters(); // Actualizar contadores
         checkUpcomingClasses();
         checkUpcomingTareas();
         setInterval(checkUpcomingClasses, 60000);
         setInterval(checkUpcomingTareas, 60000);
     }
     
-    // Cambiar entre modo claro y oscuro
+    // Función para actualizar contadores
+    function updateCounters() {
+        if (materiasCount) materiasCount.textContent = materias.length;
+        if (pendingTasksCount) pendingTasksCount.textContent = tareas.filter(t => !t.completada).length;
+        
+        // Contar clases de hoy
+        const hoy = new Date();
+        const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const diaActual = diasSemana[hoy.getDay()];
+        const clasesHoy = clases.filter(c => c.dia === diaActual).length;
+        if (todayClassesCount) todayClassesCount.textContent = clasesHoy;
+    }
+    
+    // Cambiar entre modo claro y oscuro (actualizado)
     themeToggle.addEventListener('click', function() {
         document.body.classList.toggle('dark-mode');
-        if (document.body.classList.contains('dark-mode')) {
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        } else {
-            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-        }
+        // El CSS ya maneja el cambio visual del toggle
+        showNotification('Tema actualizado', 'Modo ' + (document.body.classList.contains('dark-mode') ? 'oscuro' : 'claro') + ' activado');
     });
     
     
-    // Sistema de pestañas
-    document.querySelectorAll('.tab').forEach(tab => {
+    // Sistema de pestañas actualizado
+    document.querySelectorAll('.tab, .tab-btn').forEach(tab => {
         tab.addEventListener('click', function() {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            // Remover clases activas de pestañas en el mismo contenedor
+            const tabContainer = this.closest('.tabs, .modern-tabs');
+            const contentContainer = this.closest('.card, .dashboard-card');
+            
+            tabContainer.querySelectorAll('.tab, .tab-btn').forEach(t => t.classList.remove('active'));
+            contentContainer.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
             this.classList.add('active');
-            document.getElementById(this.dataset.tab + 'Tab').classList.add('active');
+            const targetTab = this.dataset.tab;
+            const targetContent = document.getElementById(targetTab + 'Tab');
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
         });
     });
     
     // --- AÑADE ESTE BLOQUE ---
     // Botón para sincronizar manualmente las clases
     document.getElementById('syncClassesBtn').addEventListener('click', function() {
-        showNotification('Actualizando estado de las clases...');
+        showNotification('Información', 'Actualizando estado de las clases...');
         checkUpcomingClasses();
     });
     // --- FIN DEL BLOQUE AÑADIDO ---
@@ -74,9 +101,10 @@ document.addEventListener('DOMContentLoaded', function() {
         guardarDatos();
         renderMaterias();
         updateMateriasSelects();
+        updateCounters(); // Actualizar contadores
         
         this.reset();
-        showNotification('Materia agregada correctamente');
+        showNotification('¡Éxito!', 'Materia agregada correctamente');
     });
     
     // Formulario de clases
@@ -99,8 +127,9 @@ document.addEventListener('DOMContentLoaded', function() {
         clases.push(nuevaClase);
         guardarDatos();
         renderClases();
+        updateCounters(); // Actualizar contadores
         this.reset();
-        showNotification('Clase agregada correctamente');
+        showNotification('¡Éxito!', 'Clase agregada correctamente');
     });
     
     // Formulario de tareas
@@ -125,8 +154,9 @@ document.addEventListener('DOMContentLoaded', function() {
         tareas.push(nuevaTarea);
         guardarDatos();
         renderTareas();
+        updateCounters(); // Actualizar contadores
         this.reset();
-        showNotification('Tarea agregada correctamente');
+        showNotification('¡Éxito!', 'Tarea agregada correctamente');
     });
     
     // Formulario de anotaciones
@@ -153,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderAnotaciones();
         
         this.reset();
-        showNotification('Anotación guardada correctamente');
+        showNotification('¡Éxito!', 'Anotación guardada correctamente');
     });
     
     // Actualizar los selects de materias
@@ -499,7 +529,7 @@ function renderHistorialClases() {
 
             // Mostrar notificación si la clase comienza en el rango deseado (1-120 min)
             if (diffMinutos > 0 && diffMinutos <= 120) {
-                showNotification(`La clase de ${clase.materiaNombre} comienza en ${diffMinutos} minutos`);
+                showNotification('¡Próxima clase!', `La clase de ${clase.materiaNombre} comienza en ${diffMinutos} minutos`);
             }
         });
 
@@ -592,7 +622,8 @@ function checkUpcomingTareas() {
             renderAnotaciones();
             updateMateriasSelects();
             
-            showNotification('Materia eliminada correctamente');
+            showNotification('¡Éxito!', 'Materia eliminada correctamente');
+            updateCounters(); // Actualizar contadores
         }
     }
     
@@ -602,7 +633,8 @@ function checkUpcomingTareas() {
             clases = clases.filter(c => c.id !== id);
             guardarDatos();
             renderClases();
-            showNotification('Clase eliminada correctamente');
+            showNotification('¡Éxito!', 'Clase eliminada correctamente');
+            updateCounters(); // Actualizar contadores
         }
     }
     
@@ -613,7 +645,8 @@ function checkUpcomingTareas() {
             tarea.completada = !tarea.completada;
             guardarDatos();
             renderTareas();
-            showNotification(`Tarea ${tarea.completada ? 'completada' : 'marcada como pendiente'}`);
+            showNotification('¡Éxito!', `Tarea ${tarea.completada ? 'completada' : 'marcada como pendiente'}`);
+            updateCounters(); // Actualizar contadores
         }
     }
     
@@ -623,7 +656,8 @@ function checkUpcomingTareas() {
             tareas = tareas.filter(t => t.id !== id);
             guardarDatos();
             renderTareas();
-            showNotification('Tarea eliminada correctamente');
+            showNotification('¡Éxito!', 'Tarea eliminada correctamente');
+            updateCounters(); // Actualizar contadores
         }
     }
     
@@ -633,7 +667,7 @@ function checkUpcomingTareas() {
             anotaciones = anotaciones.filter(a => a.id !== id);
             guardarDatos();
             renderAnotaciones();
-            showNotification('Anotación eliminada correctamente');
+            showNotification('¡Éxito!', 'Anotación eliminada correctamente');
         }
     }
     
@@ -645,14 +679,41 @@ function checkUpcomingTareas() {
         localStorage.setItem('anotaciones', JSON.stringify(anotaciones));
     }
     
-    // Mostrar notificación
-    function showNotification(mensaje) {
-        notificationText.textContent = mensaje;
+    // Mostrar notificación moderna
+    function showNotification(titulo, mensaje = '') {
+        // Si solo se pasa un parámetro, usarlo como mensaje
+        if (!mensaje) {
+            mensaje = titulo;
+            titulo = 'Notificación';
+        }
+        
+        if (notificationTitle) notificationTitle.textContent = titulo;
+        if (notificationText) notificationText.textContent = mensaje;
+        
+        // Determinar el icono basado en el tipo de notificación
+        if (notificationIcon) {
+            if (titulo.includes('Error') || titulo.includes('error')) {
+                notificationIcon.className = 'fas fa-exclamation-triangle';
+            } else if (titulo.includes('Éxito') || titulo.includes('éxito')) {
+                notificationIcon.className = 'fas fa-check-circle';
+            } else {
+                notificationIcon.className = 'fas fa-info-circle';
+            }
+        }
+        
         notification.classList.add('show');
         
+        // Auto-cerrar después de 5 segundos
         setTimeout(() => {
             notification.classList.remove('show');
-        }, 7000); // <-- CAMBIADO DE 3000 A 7000
+        }, 5000);
+    }
+    
+    // Cerrar notificación manualmente
+    if (notificationClose) {
+        notificationClose.addEventListener('click', () => {
+            notification.classList.remove('show');
+        });
     }
     
     // Formatear hora (de HH:MM a HH:MM AM/PM)
@@ -684,41 +745,82 @@ function checkUpcomingTareas() {
         const clase = clases.find(c => c.id === id);
         if (!clase) return;
 
-        modalTitle.textContent = 'Editar Clase';
+        modalTitle.innerHTML = '<i class="fas fa-chalkboard-teacher"></i> Editar Clase';
         
-        // Crear el formulario de edición para clases
+        // Crear el formulario de edición moderno para clases
         modalBody.innerHTML = `
-            <form id="editClaseForm">
-                <div class="form-group">
-                    <label for="editClaseMateria">Materia</label>
-                    <select id="editClaseMateria" required>${document.getElementById('claseMateria').innerHTML}</select>
-                </div>
-                <div class="form-group">
-                    <label for="editClaseDia">Día</label>
-                    <select id="editClaseDia" required>${document.getElementById('claseDia').innerHTML}</select>
-                </div>
-                <div class="form-group">
-                    <label for="editClaseHora">Hora</label>
-                    <input type="time" id="editClaseHora" required>
-                </div>
-                <div class="form-group">
-                    <label for="editClaseDuracion">Duración (min)</label>
-                    <input type="number" id="editClaseDuracion" min="1" required>
-                </div>
-                <div class="form-group">
-                    <label for="editClaseAula">Aula</label>
-                    <input type="text" id="editClaseAula">
-                </div>
-                <button type="submit" class="btn">Guardar Cambios</button>
-            </form>
+            <div class="modal-form-container">
+                <form id="editClaseForm" class="modern-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <div class="select-wrapper">
+                                <select id="editClaseMateria" required>
+                                    ${document.getElementById('claseMateria').innerHTML}
+                                </select>
+                                <label for="editClaseMateria">Materia</label>
+                                <i class="fas fa-book select-icon"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <div class="select-wrapper">
+                                <select id="editClaseDia" required>
+                                    ${document.getElementById('claseDia').innerHTML}
+                                </select>
+                                <label for="editClaseDia">Día de la semana</label>
+                                <i class="fas fa-calendar select-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <input type="time" id="editClaseHora" required>
+                                <label for="editClaseHora">Hora de inicio</label>
+                                <i class="fas fa-clock input-icon"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <input type="number" id="editClaseDuracion" min="30" required placeholder=" ">
+                                <label for="editClaseDuracion">Duración (min)</label>
+                                <i class="fas fa-hourglass-half input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <input type="text" id="editClaseAula" placeholder=" ">
+                            <label for="editClaseAula">Aula/Lugar</label>
+                            <i class="fas fa-map-marker-alt input-icon"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('editModal').classList.remove('show')">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
         `;
 
         // Rellenar los datos
-        document.getElementById('editClaseMateria').value = clase.materiaId;
-        document.getElementById('editClaseDia').value = clase.dia;
-        document.getElementById('editClaseHora').value = clase.hora;
-        document.getElementById('editClaseDuracion').value = clase.duracion;
-        document.getElementById('editClaseAula').value = clase.aula;
+        setTimeout(() => {
+            document.getElementById('editClaseMateria').value = clase.materiaId;
+            document.getElementById('editClaseDia').value = clase.dia;
+            document.getElementById('editClaseHora').value = clase.hora;
+            document.getElementById('editClaseDuracion').value = clase.duracion;
+            document.getElementById('editClaseAula').value = clase.aula || '';
+        }, 100);
 
         // Mostrar el modal
         modal.classList.add('show');
@@ -727,8 +829,10 @@ function checkUpcomingTareas() {
         document.getElementById('editClaseForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const materiaId = parseInt(document.getElementById('editClaseMateria').value);
+            const materia = materias.find(m => m.id === materiaId);
+            
             clase.materiaId = materiaId;
-            clase.materiaNombre = materias.find(m => m.id === materiaId).nombre;
+            clase.materiaNombre = materia.nombre;
             clase.dia = document.getElementById('editClaseDia').value;
             clase.hora = document.getElementById('editClaseHora').value;
             clase.duracion = document.getElementById('editClaseDuracion').value;
@@ -737,7 +841,7 @@ function checkUpcomingTareas() {
             guardarDatos();
             renderClases();
             modal.classList.remove('show');
-            showNotification('Clase actualizada correctamente');
+            showNotification('¡Éxito!', 'Clase actualizada correctamente');
         });
     }
 
@@ -745,36 +849,73 @@ function checkUpcomingTareas() {
         const tarea = tareas.find(t => t.id === id);
         if (!tarea) return;
 
-        modalTitle.textContent = 'Editar Tarea';
+        modalTitle.innerHTML = '<i class="fas fa-tasks"></i> Editar Tarea';
         
-        // Crear el formulario de edición para tareas
+        // Crear el formulario de edición moderno para tareas
         modalBody.innerHTML = `
-            <form id="editTareaForm">
-                <div class="form-group">
-                    <label for="editTareaDescripcion">Descripción</label>
-                    <input type="text" id="editTareaDescripcion" required>
-                </div>
-                <div class="form-group">
-                    <label for="editTareaMateria">Materia</label>
-                    <select id="editTareaMateria">${document.getElementById('tareaMateria').innerHTML}</select>
-                </div>
-                <div class="form-group">
-                    <label for="editTareaFecha">Fecha de Entrega</label>
-                    <input type="date" id="editTareaFecha" required>
-                </div>
-                <div class="form-group">
-                    <label for="editTareaPrioridad">Prioridad</label>
-                    <select id="editTareaPrioridad" required>${document.getElementById('tareaPrioridad').innerHTML}</select>
-                </div>
-                <button type="submit" class="btn">Guardar Cambios</button>
-            </form>
+            <div class="modal-form-container">
+                <form id="editTareaForm" class="modern-form">
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <input type="text" id="editTareaDescripcion" required placeholder=" ">
+                            <label for="editTareaDescripcion">Descripción de la tarea</label>
+                            <i class="fas fa-edit input-icon"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="input-group">
+                            <div class="select-wrapper">
+                                <select id="editTareaMateria">
+                                    ${document.getElementById('tareaMateria').innerHTML}
+                                </select>
+                                <label for="editTareaMateria">Materia</label>
+                                <i class="fas fa-book select-icon"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <input type="date" id="editTareaFecha" required>
+                                <label for="editTareaFecha">Fecha de entrega</label>
+                                <i class="fas fa-calendar-alt input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="select-wrapper">
+                            <select id="editTareaPrioridad" required>
+                                <option value="alta">🔥 Alta Prioridad</option>
+                                <option value="media">⚡ Media Prioridad</option>
+                                <option value="baja">✅ Baja Prioridad</option>
+                            </select>
+                            <label for="editTareaPrioridad">Prioridad</label>
+                            <i class="fas fa-exclamation-triangle select-icon"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('editModal').classList.remove('show')">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
         `;
 
         // Rellenar los datos
-        document.getElementById('editTareaDescripcion').value = tarea.descripcion;
-        document.getElementById('editTareaMateria').value = tarea.materiaId || '';
-        document.getElementById('editTareaFecha').value = tarea.fecha;
-        document.getElementById('editTareaPrioridad').value = tarea.prioridad;
+        setTimeout(() => {
+            document.getElementById('editTareaDescripcion').value = tarea.descripcion;
+            document.getElementById('editTareaMateria').value = tarea.materiaId || '';
+            document.getElementById('editTareaFecha').value = tarea.fecha;
+            document.getElementById('editTareaPrioridad').value = tarea.prioridad;
+        }, 100);
 
         // Mostrar el modal
         modal.classList.add('show');
@@ -782,17 +923,22 @@ function checkUpcomingTareas() {
         // Manejar el guardado
         document.getElementById('editTareaForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const materiaId = document.getElementById('editTareaMateria').value ? parseInt(document.getElementById('editTareaMateria').value) : null;
+            const materiaId = document.getElementById('editTareaMateria').value ? 
+                parseInt(document.getElementById('editTareaMateria').value) : null;
+            const materiaNombre = materiaId ? 
+                materias.find(m => m.id === materiaId).nombre : 'General';
+
             tarea.descripcion = document.getElementById('editTareaDescripcion').value;
             tarea.materiaId = materiaId;
-            tarea.materiaNombre = materiaId ? materias.find(m => m.id === materiaId).nombre : 'General';
+            tarea.materiaNombre = materiaNombre;
             tarea.fecha = document.getElementById('editTareaFecha').value;
             tarea.prioridad = document.getElementById('editTareaPrioridad').value;
 
             guardarDatos();
             renderTareas();
+            updateCounters();
             modal.classList.remove('show');
-            showNotification('Tarea actualizada correctamente');
+            showNotification('¡Éxito!', 'Tarea actualizada correctamente');
         });
     }
 

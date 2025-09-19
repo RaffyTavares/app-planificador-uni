@@ -1,270 +1,530 @@
 <!--
     ********************************************************************************
     *                                                                              *
-    *                           PLANIFICADOR UNIVERSITARIO                         *
-    *                Estructura principal de la página (HTML5)                     *
+    *                     PLANIFICADOR UNIVERSITARIO PROFESIONAL                  *
+    *            Aplicación moderna para gestión académica estudiantil             *
     *                                                                              *
     ********************************************************************************
 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Metadatos básicos para el navegador -->
+    <!-- Metadatos optimizados -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador Universitario</title>
+    <meta name="description" content="Planificador universitario profesional para gestionar materias, horarios, tareas y notas de estudio">
+    <meta name="keywords" content="planificador, universidad, estudiante, horarios, tareas, notas">
+    <meta name="author" content="Sistema de Gestión Académica">
+    
+    <title>EduPlanner Pro - Planificador Universitario</title>
 
-    <!-- Enlaces a hojas de estilo y favicon -->
-    <!-- Font Awesome para iconos (ej. <i class="fas fa-book"></i>) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Hoja de estilos principal de la aplicación -->
+    <!-- Fuentes modernas de Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AOS (Animate On Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Iconos modernos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Estilos principales -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Favicon para la pestaña del navegador -->
-    <link rel="icon" href="logo.jpeg" type="image/x-icon">
+    
+    <!-- Favicon optimizado -->
+    <link rel="icon" href="logo.jpeg" type="image/jpeg">
+    <link rel="apple-touch-icon" href="logo.jpeg">
 </head>
 <body>
+    <!-- Loader de la aplicación -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <h3>EduPlanner Pro</h3>
+            <p>Cargando tu espacio de estudio...</p>
+        </div>
+    </div>
 
     <!-- ==========================================================================
-         ENCABEZADO PRINCIPAL (HEADER)
-         Contiene el logo de la aplicación y el botón para cambiar el tema (oscuro/claro).
+         ENCABEZADO PRINCIPAL MODERNO
+         Diseño elegante con gradiente y navegación mejorada
     =========================================================================== -->
-    <header>
+    <header class="modern-header">
         <div class="container">
             <div class="header-content">
-                <!-- Logo y título de la aplicación -->
-                <div class="logo">
-                    <i class="fas fa-graduation-cap"></i> Planificador Universitario
+                <!-- Logo y branding mejorado -->
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>EduPlanner Pro</h1>
+                        <span class="tagline">Tu éxito académico</span>
+                    </div>
                 </div>
-                <!-- Botón para alternar entre modo claro y oscuro -->
-                <button class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-moon"></i>
-                </button>
+                
+                <!-- Controles del header -->
+                <div class="header-controls">
+                    <!-- Indicador de estado -->
+                    <div class="status-indicator">
+                        <span class="status-dot active"></span>
+                        <span class="status-text">En línea</span>
+                    </div>
+                    
+                    <!-- Botón de tema mejorado -->
+                    <button class="theme-toggle-modern" id="themeToggle" title="Cambiar tema">
+                        <div class="toggle-track">
+                            <div class="toggle-thumb">
+                                <i class="fas fa-moon moon-icon"></i>
+                                <i class="fas fa-sun sun-icon"></i>
+                            </div>
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- ==========================================================================
-         CONTENEDOR PRINCIPAL DE LA APLICACIÓN
-         Utiliza un layout de grid para dividir la página en una barra lateral y el contenido principal.
+         CONTENEDOR PRINCIPAL MODERNO
+         Layout mejorado con grid responsivo y animaciones suaves
     =========================================================================== -->
-    <div class="container">
-        <div class="main-content">
+    <div class="app-container">
+        <div class="main-layout">
 
             <!-- ==========================================================================
-                 BARRA LATERAL (ASIDE)
-                 Contiene el formulario para agregar materias, la lista de materias y las próximas clases.
+                 BARRA LATERAL MODERNA
+                 Panel lateral con diseño elegante y funcionalidad mejorada
             =========================================================================== -->
-            <aside class="sidebar">
-                <!-- Título de la sección de materias -->
-                <h2 class="card-title"><i class="fas fa-book"></i> Mis Materias</h2>
+            <aside class="modern-sidebar">
+                <!-- Header de la sidebar -->
+                <div class="sidebar-header">
+                    <div class="sidebar-title">
+                        <i class="fas fa-book-open"></i>
+                        <span>Panel de Control</span>
+                    </div>
+                </div>
                 
-                <!-- Formulario para agregar una nueva materia -->
-                <form id="materiaForm">
-                    <div class="form-group">
-                        <label for="materiaNombre">Nombre de la materia</label>
-                        <input type="text" id="materiaNombre" required>
+                <!-- Sección de materias -->
+                <div class="sidebar-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-books"></i>
+                        Mis Materias
+                        <span class="count-badge" id="materiasCount">0</span>
+                    </h3>
+                    
+                    <!-- Formulario mejorado -->
+                    <div class="form-card">
+                        <form id="materiaForm" class="modern-form">
+                            <div class="input-group">
+                                <div class="input-wrapper">
+                                    <input type="text" id="materiaNombre" required placeholder=" ">
+                                    <label for="materiaNombre">Nombre de la materia</label>
+                                    <i class="fas fa-book input-icon"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <div class="input-wrapper">
+                                    <input type="text" id="materiaProfesor" placeholder=" ">
+                                    <label for="materiaProfesor">Profesor</label>
+                                    <i class="fas fa-user-tie input-icon"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <div class="input-wrapper">
+                                    <input type="number" id="materiaCreditos" min="1" placeholder=" ">
+                                    <label for="materiaCreditos">Créditos</label>
+                                    <i class="fas fa-star input-icon"></i>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Agregar Materia
+                            </button>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label for="materiaProfesor">Profesor</label>
-                        <input type="text" id="materiaProfesor">
-                    </div>
-                    <div class="form-group">
-                        <label for="materiaCreditos">Créditos</label>
-                        <input type="number" id="materiaCreditos" min="1">
-                    </div>
-                    <button type="submit" class="btn">Agregar Materia</button>
-                </form>
 
-                <!-- Contenedor donde se mostrarán dinámicamente las materias agregadas -->
-                <div class="materias-list" id="materiasList">
-                    <!-- Las materias se generan con JavaScript -->
+                    <!-- Lista de materias moderna -->
+                    <div class="materias-container">
+                        <div class="materias-list modern-list" id="materiasList">
+                            <!-- Las materias se generan dinámicamente -->
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Sección para mostrar las clases que ocurrirán pronto -->
-                <div class="upcoming-classes">
-                    <div class="upcoming-title">
-                        Próximas clases
-                        <!-- Botón para actualizar manualmente el estado de las clases -->
-                        <button id="syncClassesBtn" class="action-btn" title="Actualizar estado">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
-                    <!-- Contenedor donde se mostrarán las próximas clases -->
-                    <div id="proximasClases">
-                        <!-- Las clases próximas se generan con JavaScript -->
+                <!-- Sección de clases próximas -->
+                <div class="sidebar-section">
+                    <div class="upcoming-section">
+                        <div class="upcoming-header">
+                            <h3 class="section-title">
+                                <i class="fas fa-clock"></i>
+                                Próximas Clases
+                            </h3>
+                            <button id="syncClassesBtn" class="sync-btn" title="Actualizar">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="upcoming-content" id="proximasClases">
+                            <!-- Clases próximas generadas dinámicamente -->
+                        </div>
                     </div>
                 </div>
             </aside>
 
             <!-- ==========================================================================
-                 CONTENIDO PRINCIPAL (MAIN)
-                 Organizado en tarjetas (cards) para gestionar clases, tareas, anotaciones e historial.
+                 ÁREA PRINCIPAL DE CONTENIDO
+                 Dashboard moderno con tarjetas interactivas y navegación por pestañas
             =========================================================================== -->
-            <main class="content">
+            <main class="main-dashboard">
+                <!-- Header del dashboard -->
+                <div class="dashboard-header">
+                    <div class="welcome-section">
+                        <h2 class="dashboard-title">Dashboard Académico</h2>
+                        <p class="dashboard-subtitle">Gestiona tu vida universitaria de manera eficiente</p>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-tasks"></i>
+                            <span class="stat-number" id="pendingTasksCount">0</span>
+                            <span class="stat-label">Tareas Pendientes</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-clock"></i>
+                            <span class="stat-number" id="todayClassesCount">0</span>
+                            <span class="stat-label">Clases Hoy</span>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- TARJETA 1: GESTIÓN DE CLASES -->
-                <div class="card">
-                    <h2 class="card-title"><i class="fas fa-chalkboard-teacher"></i> Gestión de Clases</h2>
-                    
-                    <!-- Pestañas para alternar entre registrar clases y ver el horario -->
-                    <div class="tabs">
-                        <div class="tab active" data-tab="clases">Registrar Clases</div>
-                        <div class="tab" data-tab="horario">Mi Horario</div>
+                <!-- TARJETA 1: GESTIÓN DE CLASES MODERNA -->
+                <div class="dashboard-card" data-aos="fade-up">
+                    <div class="card-header">
+                        <div class="card-title-section">
+                            <div class="card-icon">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div>
+                                <h3 class="card-title">Gestión de Clases</h3>
+                                <p class="card-subtitle">Organiza tu horario académico</p>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn-small" title="Exportar horario">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
                     </div>
                     
-                    <!-- Contenido de la pestaña "Registrar Clases" -->
+                    <!-- Pestañas modernas -->
+                    <div class="modern-tabs">
+                        <button class="tab-btn active" data-tab="clases">
+                            <i class="fas fa-plus"></i>
+                            Registrar Clases
+                        </button>
+                        <button class="tab-btn" data-tab="horario">
+                            <i class="fas fa-calendar-alt"></i>
+                            Mi Horario
+                        </button>
+                    </div>
+                    
+                    <!-- Contenido de pestañas -->
                     <div class="tab-content active" id="clasesTab">
-                        <form id="claseForm">
-                            <div class="form-group">
-                                <label for="claseMateria">Materia</label>
-                                <select id="claseMateria" required>
-                                    <option value="">Selecciona una materia</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="claseDia">Día de la semana</label>
-                                <select id="claseDia" required>
-                                    <option value="">Selecciona un día</option>
-                                    <option value="Domingo">Domingo</option>
-                                    <option value="Lunes">Lunes</option>
-                                    <option value="Martes">Martes</option>
-                                    <option value="Miércoles">Miércoles</option>
-                                    <option value="Jueves">Jueves</option>
-                                    <option value="Viernes">Viernes</option>
-                                    <option value="Sábado">Sábado</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="claseHora">Hora de inicio</label>
-                                <input type="time" id="claseHora" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="claseDuracion">Duración (minutos)</label>
-                                <input type="number" id="claseDuracion" min="30" value="90">
-                            </div>
-                            <div class="form-group">
-                                <label for="claseAula">Aula/Lugar</label>
-                                <input type="text" id="claseAula">
-                            </div>
-                            <button type="submit" class="btn">Agregar Clase</button>
-                        </form>
+                        <div class="form-card">
+                            <form id="claseForm" class="modern-form">
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <div class="select-wrapper">
+                                            <select id="claseMateria" required>
+                                                <option value="">Selecciona una materia</option>
+                                            </select>
+                                            <label for="claseMateria">Materia</label>
+                                            <i class="fas fa-book select-icon"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <div class="select-wrapper">
+                                            <select id="claseDia" required>
+                                                <option value="">Selecciona un día</option>
+                                                <option value="Domingo">Domingo</option>
+                                                <option value="Lunes">Lunes</option>
+                                                <option value="Martes">Martes</option>
+                                                <option value="Miércoles">Miércoles</option>
+                                                <option value="Jueves">Jueves</option>
+                                                <option value="Viernes">Viernes</option>
+                                                <option value="Sábado">Sábado</option>
+                                            </select>
+                                            <label for="claseDia">Día de la semana</label>
+                                            <i class="fas fa-calendar select-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <div class="input-wrapper">
+                                            <input type="time" id="claseHora" required>
+                                            <label for="claseHora">Hora de inicio</label>
+                                            <i class="fas fa-clock input-icon"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <div class="input-wrapper">
+                                            <input type="number" id="claseDuracion" min="30" value="90" placeholder=" ">
+                                            <label for="claseDuracion">Duración (min)</label>
+                                            <i class="fas fa-hourglass-half input-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <div class="input-wrapper">
+                                        <input type="text" id="claseAula" placeholder=" ">
+                                        <label for="claseAula">Aula/Lugar</label>
+                                        <i class="fas fa-map-marker-alt input-icon"></i>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                    Agregar Clase
+                                </button>
+                            </form>
+                        </div>
                     </div>
                     
                     <!-- Contenido de la pestaña "Mi Horario" -->
                     <div class="tab-content" id="horarioTab">
-                        <div class="clases-list" id="clasesList">
-                            <!-- El horario de clases se genera con JavaScript -->
+                        <div class="schedule-container">
+                            <div class="clases-list modern-list" id="clasesList">
+                                <!-- El horario se genera dinámicamente -->
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TARJETA 2: GESTIÓN DE TAREAS Y RECORDATORIOS -->
-                <div class="card">
-                    <h2 class="card-title"><i class="fas fa-tasks"></i> Tareas y Recordatorios</h2>
-                    
-                    <!-- Pestañas para alternar entre agregar y ver tareas -->
-                    <div class="tabs">
-                        <div class="tab active" data-tab="agregar-tarea">Agregar Tarea</div>
-                        <div class="tab" data-tab="ver-tareas">Ver Tareas</div>
+                <!-- TARJETA 2: GESTIÓN DE TAREAS MODERNA -->
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-header">
+                        <div class="card-title-section">
+                            <div class="card-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div>
+                                <h3 class="card-title">Tareas y Recordatorios</h3>
+                                <p class="card-subtitle">Mantén el control de tus entregas</p>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn-small" title="Filtrar tareas">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Contenido de la pestaña "Agregar Tarea" -->
+                    <!-- Pestañas modernas -->
+                    <div class="modern-tabs">
+                        <button class="tab-btn active" data-tab="agregar-tarea">
+                            <i class="fas fa-plus"></i>
+                            Agregar Tarea
+                        </button>
+                        <button class="tab-btn" data-tab="ver-tareas">
+                            <i class="fas fa-list"></i>
+                            Ver Tareas
+                        </button>
+                    </div>
+
+                    <!-- Contenido de pestañas -->
                     <div class="tab-content active" id="agregar-tareaTab">
-                        <form id="tareaForm">
-                            <div class="form-group">
-                                <label for="tareaDescripcion">Descripción de la tarea</label>
-                                <input type="text" id="tareaDescripcion" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="tareaMateria">Materia</label>
-                                <select id="tareaMateria">
-                                    <option value="">General</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="tareaFecha">Fecha de entrega</label>
-                                <input type="date" id="tareaFecha" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="tareaPrioridad">Prioridad</label>
-                                <select id="tareaPrioridad">
-                                    <option value="alta">Alta</option>
-                                    <option value="media" selected>Media</option>
-                                    <option value="baja">Baja</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn">Agregar Tarea</button>
-                        </form>
+                        <div class="form-card">
+                            <form id="tareaForm" class="modern-form">
+                                <div class="input-group">
+                                    <div class="input-wrapper">
+                                        <input type="text" id="tareaDescripcion" required placeholder=" ">
+                                        <label for="tareaDescripcion">Descripción de la tarea</label>
+                                        <i class="fas fa-edit input-icon"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <div class="select-wrapper">
+                                            <select id="tareaMateria">
+                                                <option value="">General</option>
+                                            </select>
+                                            <label for="tareaMateria">Materia</label>
+                                            <i class="fas fa-book select-icon"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <div class="input-wrapper">
+                                            <input type="date" id="tareaFecha" required>
+                                            <label for="tareaFecha">Fecha de entrega</label>
+                                            <i class="fas fa-calendar-alt input-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <div class="select-wrapper">
+                                        <select id="tareaPrioridad">
+                                            <option value="alta">🔥 Alta Prioridad</option>
+                                            <option value="media" selected>⚡ Media Prioridad</option>
+                                            <option value="baja">✅ Baja Prioridad</option>
+                                        </select>
+                                        <label for="tareaPrioridad">Prioridad</label>
+                                        <i class="fas fa-exclamation-triangle select-icon"></i>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                    Agregar Tarea
+                                </button>
+                            </form>
+                        </div>
                     </div>
 
-                    <!-- Contenido de la pestaña "Ver Tareas" -->
+                    <!-- Ver tareas -->
                     <div class="tab-content" id="ver-tareasTab">
-                        <div class="tareas-list" id="tareasList">
-                            <!-- La lista de tareas se genera con JavaScript -->
+                        <div class="tasks-container">
+                            <div class="tareas-list modern-list" id="tareasList">
+                                <!-- Las tareas se generan dinámicamente -->
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TARJETA 3: GESTIÓN DE ANOTACIONES -->
-                <div class="card">
-                    <h2 class="card-title"><i class="fas fa-sticky-note"></i> Anotaciones Importantes</h2>
+                <!-- TARJETA 3: ANOTACIONES MODERNAS -->
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-header">
+                        <div class="card-title-section">
+                            <div class="card-icon">
+                                <i class="fas fa-sticky-note"></i>
+                            </div>
+                            <div>
+                                <h3 class="card-title">Anotaciones Importantes</h3>
+                                <p class="card-subtitle">Guarda tus ideas y recordatorios</p>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn-small" title="Buscar anotaciones">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
                     
-                    <!-- Pestañas para alternar entre nueva y ver anotaciones -->
-                    <div class="tabs">
-                        <div class="tab active" data-tab="nueva-anotacion">Nueva Anotación</div>
-                        <div class="tab" data-tab="ver-anotaciones">Ver Anotaciones</div>
+                    <!-- Pestañas modernas -->
+                    <div class="modern-tabs">
+                        <button class="tab-btn active" data-tab="nueva-anotacion">
+                            <i class="fas fa-plus"></i>
+                            Nueva Anotación
+                        </button>
+                        <button class="tab-btn" data-tab="ver-anotaciones">
+                            <i class="fas fa-eye"></i>
+                            Ver Anotaciones
+                        </button>
                     </div>
 
-                    <!-- Contenido de la pestaña "Nueva Anotación" -->
+                    <!-- Contenido de pestañas -->
                     <div class="tab-content active" id="nueva-anotacionTab">
-                        <form id="anotacionForm">
-                            <div class="form-group">
-                                <label for="anotacionTitulo">Título</label>
-                                <input type="text" id="anotacionTitulo" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="anotacionContenido">Contenido</label>
-                                <textarea id="anotacionContenido" rows="3" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="anotacionMateria">Materia (opcional)</label>
-                                <select id="anotacionMateria">
-                                    <option value="">General</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn">Guardar Anotación</button>
-                        </form>
+                        <div class="form-card">
+                            <form id="anotacionForm" class="modern-form">
+                                <div class="input-group">
+                                    <div class="input-wrapper">
+                                        <input type="text" id="anotacionTitulo" required placeholder=" ">
+                                        <label for="anotacionTitulo">Título</label>
+                                        <i class="fas fa-heading input-icon"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <div class="textarea-wrapper">
+                                        <textarea id="anotacionContenido" rows="4" required placeholder=" "></textarea>
+                                        <label for="anotacionContenido">Contenido</label>
+                                        <i class="fas fa-align-left textarea-icon"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <div class="select-wrapper">
+                                        <select id="anotacionMateria">
+                                            <option value="">General</option>
+                                        </select>
+                                        <label for="anotacionMateria">Materia (opcional)</label>
+                                        <i class="fas fa-book select-icon"></i>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Guardar Anotación
+                                </button>
+                            </form>
+                        </div>
                     </div>
 
-                    <!-- Contenido de la pestaña "Ver Anotaciones" -->
+                    <!-- Ver anotaciones -->
                     <div class="tab-content" id="ver-anotacionesTab">
-                        <div class="anotaciones-list" id="anotacionesList">
-                            <!-- La lista de anotaciones se genera con JavaScript -->
+                        <div class="notes-container">
+                            <div class="anotaciones-list modern-list" id="anotacionesList">
+                                <!-- Las anotaciones se generan dinámicamente -->
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TARJETA 4: HISTORIAL -->
-                <div class="card">
-                    <h2 class="card-title"><i class="fas fa-history"></i> Historial</h2>
-                    
-                    <!-- Pestañas para ver tareas completadas y clases pasadas -->
-                    <div class="tabs">
-                        <div class="tab active" data-tab="historial-tareas">Tareas Completadas</div>
-                        <div class="tab" data-tab="historial-clases">Clases Pasadas</div>
-                    </div>
-                    
-                    <!-- Contenido de la pestaña "Tareas Completadas" -->
-                    <div class="tab-content active" id="historial-tareasTab">
-                        <div class="historial-list" id="historialTareasList">
-                            <!-- El historial de tareas se genera con JavaScript -->
+                <!-- TARJETA 4: HISTORIAL MODERNO -->
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-header">
+                        <div class="card-title-section">
+                            <div class="card-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <div>
+                                <h3 class="card-title">Historial Académico</h3>
+                                <p class="card-subtitle">Revisa tu progreso y logros</p>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn-small" title="Exportar historial">
+                                <i class="fas fa-download"></i>
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- Contenido de la pestaña "Clases Pasadas" -->
+                    <!-- Pestañas modernas -->
+                    <div class="modern-tabs">
+                        <button class="tab-btn active" data-tab="historial-tareas">
+                            <i class="fas fa-check-circle"></i>
+                            Tareas Completadas
+                        </button>
+                        <button class="tab-btn" data-tab="historial-clases">
+                            <i class="fas fa-clock"></i>
+                            Clases Pasadas
+                        </button>
+                    </div>
+                    
+                    <!-- Contenido de pestañas -->
+                    <div class="tab-content active" id="historial-tareasTab">
+                        <div class="history-container">
+                            <div class="historial-list modern-list" id="historialTareasList">
+                                <!-- El historial se genera dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="tab-content" id="historial-clasesTab">
-                        <div class="historial-list" id="historialClasesList">
-                            <!-- El historial de clases se genera con JavaScript -->
+                        <div class="history-container">
+                            <div class="historial-list modern-list" id="historialClasesList">
+                                <!-- El historial se genera dinámicamente -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -273,36 +533,72 @@
     </div>
 
     <!-- ==========================================================================
-         NOTIFICACIÓN EMERGENTE
-         Un pequeño cuadro de diálogo que aparece en la esquina para dar feedback al usuario.
+         NOTIFICACIONES MODERNAS
+         Sistema de notificaciones toast mejorado con animaciones
     =========================================================================== -->
-    <div class="notification" id="notification">
-        <i class="fas fa-bell"></i>
-        <span id="notificationText"></span>
+    <div class="notification-container" id="notificationContainer">
+        <div class="modern-notification" id="notification">
+            <div class="notification-icon">
+                <i class="fas fa-bell" id="notificationIcon"></i>
+            </div>
+            <div class="notification-content">
+                <span class="notification-title" id="notificationTitle">Notificación</span>
+                <span class="notification-text" id="notificationText"></span>
+            </div>
+            <button class="notification-close" id="notificationClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
     </div>
 
     <!-- ==========================================================================
-         MODAL PARA EDICIÓN
-         Una ventana emergente que contendrá formularios para editar clases o tareas.
-         Está oculta por defecto y se muestra con JavaScript.
+         MODAL MODERNO PARA EDICIÓN
+         Ventana modal elegante con diseño actualizado
     =========================================================================== -->
-    <div id="editModal" class="modal-overlay">
-        <div class="modal-content">
-            <!-- Botón para cerrar el modal -->
-            <button id="closeModalBtn" class="modal-close-btn">&times;</button>
-            <!-- Título del modal (ej. "Editar Tarea") -->
-            <h2 id="modalTitle" class="card-title"></h2>
-            <!-- Contenedor donde se inyectará el formulario de edición -->
-            <div id="modalBody">
-                <!-- El formulario se genera con JavaScript -->
+    <div id="editModal" class="modern-modal-overlay">
+        <div class="modern-modal">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">
+                    <i class="fas fa-edit"></i>
+                    Editar Elemento
+                </h3>
+                <button id="closeModalBtn" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- El contenido se genera dinámicamente -->
             </div>
         </div>
     </div>
 
     <!-- ==========================================================================
-         SCRIPTS
-         Enlace al archivo JavaScript principal que controla toda la lógica de la aplicación.
+         SCRIPTS Y RECURSOS
+         Archivos JavaScript para funcionalidad
     =========================================================================== -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="app.js"></script>
+    
+    <!-- Inicializar animaciones -->
+    <script>
+        // Inicializar AOS (Animate On Scroll)
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 100
+        });
+        
+        // Ocultar loader cuando la página esté cargada
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('pageLoader');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 300);
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
