@@ -38,17 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(checkUpcomingTareas, 60000);
     }
 
-    function daysBetween(d1, d2) {
-    const date1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
-    const date2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
-    return Math.ceil((date2 - date1) / (1000 * 60 * 60 * 24));
-}
-
-// Uso:
-const hoy = new Date();
-const fechaTarea = new Date(task.fecha);
-const diffDays = daysBetween(hoy, fechaTarea);
-    
     // Función para actualizar contadores
     function updateCounters() {
         if (materiasCount) materiasCount.textContent = materias.length;
@@ -346,9 +335,16 @@ const diffDays = daysBetween(hoy, fechaTarea);
         });
 
         tareas.forEach(tarea => {
+            // Corregir el cálculo de días
             const hoy = new Date();
             const fechaTarea = new Date(tarea.fecha);
-            const diffTime = fechaTarea - hoy;
+            
+            // Normalizar las fechas para comparar solo días (sin horas)
+            const hoyNormalizada = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+            const fechaTareaNormalizada = new Date(fechaTarea.getFullYear(), fechaTarea.getMonth(), fechaTarea.getDate());
+            
+            // Calcular diferencia en días
+            const diffTime = fechaTareaNormalizada - hoyNormalizada;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             let diasRestantes = '';
@@ -356,10 +352,12 @@ const diffDays = daysBetween(hoy, fechaTarea);
                 diasRestantes = '<span class="badge badge-warning">Hoy</span>';
             } else if (diffDays === 1) {
                 diasRestantes = '<span class="badge badge-warning">Mañana</span>';
-            } else if (diffDays > 0) {
+            } else if (diffDays > 1) {
                 diasRestantes = `<span class="badge">${diffDays} días</span>`;
+            } else if (diffDays === -1) {
+                diasRestantes = '<span class="badge badge-danger">Ayer</span>';
             } else {
-                diasRestantes = '<span class="badge">Vencida</span>';
+                diasRestantes = '<span class="badge badge-danger">Vencida (${Math.abs(diffDays)} días)</span>';
             }
 
             const prioridadBadge = `<span class="badge badge-${tarea.prioridad === 'alta' ? 'warning' : tarea.prioridad === 'media' ? 'primary' : 'success'}">${tarea.prioridad}</span>`;
