@@ -594,7 +594,7 @@ function renderHistorialClases() {
 function checkUpcomingTareas() {
     const hoy = new Date();
     const dosDiasDespues = new Date(hoy);
-    dosDiasDespues.setDate(hoy.getDate() + 2);
+    dosDiasDespues.setDate(hoy.getDate() + 1);
 
     // Filtrar tareas próximas a vencer en los próximos dos días
     const tareasProximas = tareas.filter(tarea => {
