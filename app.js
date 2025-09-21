@@ -37,6 +37,17 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(checkUpcomingClasses, 60000);
         setInterval(checkUpcomingTareas, 60000);
     }
+
+    function daysBetween(d1, d2) {
+    const date1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+    const date2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+    return Math.ceil((date2 - date1) / (1000 * 60 * 60 * 24));
+}
+
+// Uso:
+const hoy = new Date();
+const fechaTarea = new Date(task.fecha);
+const diffDays = daysBetween(hoy, fechaTarea);
     
     // Función para actualizar contadores
     function updateCounters() {
