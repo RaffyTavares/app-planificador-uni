@@ -335,29 +335,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         tareas.forEach(tarea => {
-            // Corregir el cálculo de días
+            // Obtener fecha actual normalizada (solo año, mes, día)
             const hoy = new Date();
-            const fechaTarea = new Date(tarea.fecha);
+            const fechaHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
             
-            // Normalizar las fechas para comparar solo días (sin horas)
-            const hoyNormalizada = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-            const fechaTareaNormalizada = new Date(fechaTarea.getFullYear(), fechaTarea.getMonth(), fechaTarea.getDate());
+            // Parsear la fecha de la tarea y normalizarla
+            const [year, month, day] = tarea.fecha.split('-').map(Number);
+            const fechaTarea = new Date(year, month - 1, day); // month - 1 porque los meses van de 0-11
             
-            // Calcular diferencia en días
-            const diffTime = fechaTareaNormalizada - hoyNormalizada;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            // Calcular diferencia en milisegundos y convertir a días
+            const diffTime = fechaTarea.getTime() - fechaHoy.getTime();
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            // Debug: agregar console.log temporal para verificar
+            console.log(`Tarea: ${tarea.descripcion}`);
+            console.log(`Fecha hoy: ${fechaHoy.toDateString()}`);
+            console.log(`Fecha tarea: ${fechaTarea.toDateString()}`);
+            console.log(`Diferencia en días: ${diffDays}`);
+            console.log('---');
 
             let diasRestantes = '';
             if (diffDays === 0) {
                 diasRestantes = '<span class="badge badge-warning">Hoy</span>';
             } else if (diffDays === 1) {
-                diasRestantes = '<span class="badge badge-warning">Mañana</span>';
+                diasRestantes = '<span class="badge badge-info">Mañana</span>';
             } else if (diffDays > 1) {
-                diasRestantes = `<span class="badge">${diffDays} días</span>`;
+                diasRestantes = `<span class="badge badge-primary">${diffDays} días</span>`;
             } else if (diffDays === -1) {
-                diasRestantes = '<span class="badge badge-danger">Ayer</span>';
-            } else {
-                diasRestantes = '<span class="badge badge-danger">Vencida (${Math.abs(diffDays)} días)</span>';
+                diasRestantes = '<span class="badge badge-warning">Ayer</span>';
+            } else if (diffDays < -1) {
+                diasRestantes = `<span class="badge badge-danger">Vencida (${Math.abs(diffDays)} días)</span>`;
             }
 
             const prioridadBadge = `<span class="badge badge-${tarea.prioridad === 'alta' ? 'warning' : tarea.prioridad === 'media' ? 'primary' : 'success'}">${tarea.prioridad}</span>`;
