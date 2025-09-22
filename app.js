@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(checkUpcomingTareas, 60000);
     }
 
+    
+
     // Función para actualizar contadores
     function updateCounters() {
         if (materiasCount) materiasCount.textContent = materias.length;
@@ -958,6 +960,241 @@ function checkUpcomingTareas() {
         });
     }
 
-    // Inicializar la aplicación
-    init();
+    // NUEVA FUNCIÓN: Navegación suave y seguimiento de secciones
+function initializeNavigation() {
+    // Crear indicador de secciones
+    createSectionIndicator();
+    
+    // Configurar navegación suave
+    setupSmoothNavigation();
+    
+    // Configurar seguimiento de scroll
+    setupScrollTracking();
+    
+    // Configurar menú móvil
+    setupMobileMenu();
+}
+
+// Crear indicador de secciones lateral
+function createSectionIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'section-indicator';
+    indicator.innerHTML = `
+        <div class="section-dot" data-section="Dashboard" data-target="dashboard"></div>
+        <div class="section-dot" data-section="Materias" data-target="materias"></div>
+        <div class="section-dot" data-section="Clases" data-target="clases"></div>
+        <div class="section-dot" data-section="Tareas" data-target="tareas"></div>
+        <div class="section-dot" data-section="Anotaciones" data-target="anotaciones"></div>
+        <div class="section-dot" data-section="Historial" data-target="historial"></div>
+    `;
+    document.body.appendChild(indicator);
+    
+    // Agregar event listeners a los dots
+    indicator.querySelectorAll('.section-dot').forEach(dot => {
+        dot.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            scrollToSection(target);
+        });
+    });
+}
+
+// Configurar navegación suave
+function setupSmoothNavigation() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remover clase active de todos los links
+            navLinks.forEach(l => l.classList.remove('active'));
+            
+            // Agregar clase active al link clickeado
+            this.classList.add('active');
+            
+            // Obtener target del href
+            const target = this.getAttribute('href').substring(1);
+            scrollToSection(target);
+        });
+    });
+}
+
+// Función de scroll suave a sección
+function scrollToSection(targetId) {
+    const targetElement = document.getElementById(targetId) || 
+                         document.querySelector(`[data-section="${targetId}"]`) ||
+                         document.querySelector('.dashboard-card');
+    
+    if (targetElement) {
+        const headerHeight = document.querySelector('.modern-header').offsetHeight;
+        const targetPosition = targetElement.offsetTop - headerHeight - 20;
+        
+        // Scroll suave personalizado
+        smoothScrollTo(targetPosition, 800);
+        
+        // Agregar efecto visual
+        targetElement.classList.add('in-view');
+        setTimeout(() => {
+            targetElement.classList.remove('in-view');
+        }, 600);
+    }
+}
+
+// Función de scroll suave personalizada
+function smoothScrollTo(targetPosition, duration) {
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    let startTime = null;
+
+    function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const run = easeInOutCubic(timeElapsed, startPosition, distance, duration);
+        window.scrollTo(0, run);
+        if (timeElapsed < duration) requestAnimationFrame(animation);
+    }
+
+    function easeInOutCubic(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return c / 2 * t * t * t + b;
+        t -= 2;
+        return c / 2 * (t * t * t + 2) + b;
+    }
+
+    requestAnimationFrame(animation);
+}
+
+// Configurar seguimiento de scroll
+function setupScrollTracking() {
+    const sections = document.querySelectorAll('.dashboard-card');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sectionDots = document.querySelectorAll('.section-dot');
+    
+    function updateActiveSection() {
+        const scrollPosition = window.scrollY + 150;
+        
+        sections.forEach((section, index) => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                // Actualizar navegación principal
+                navLinks.forEach(link => link.classList.remove('active'));
+                if (navLinks[index]) {
+                    navLinks[index].classList.add('active');
+                }
+                
+                // Actualizar indicador lateral
+                sectionDots.forEach(dot => dot.classList.remove('active'));
+                if (sectionDots[index]) {
+                    sectionDots[index].classList.add('active');
+                }
+            }
+        });
+    }
+    
+    // Throttle del scroll para mejor performance
+    let ticking = false;
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                updateActiveSection();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+    
+    window.addEventListener('scroll', onScroll);
+    updateActiveSection(); // Inicial
+}
+
+// Configurar menú móvil
+function setupMobileMenu() {
+    // Crear botón hamburguesa si no existe
+    const headerControls = document.querySelector('.header-controls');
+    const mobileToggle = document.createElement('button');
+    mobileToggle.className = 'mobile-menu-toggle';
+    mobileToggle.innerHTML = `
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    `;
+    
+    // Insertar antes del primer elemento
+    headerControls.insertBefore(mobileToggle, headerControls.firstChild);
+    
+    const navLinks = document.querySelector('.nav-links');
+    
+    mobileToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navLinks.classList.toggle('show');
+    });
+    
+    // Cerrar menú al hacer clic en un link
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileToggle.classList.remove('active');
+            navLinks.classList.remove('show');
+        });
+    });
+    
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.main-nav') && !e.target.closest('.mobile-menu-toggle')) {
+            mobileToggle.classList.remove('active');
+            navLinks.classList.remove('show');
+        }
+    });
+}
+
+// Agregar IDs a las secciones para navegación
+function assignSectionIds() {
+    const dashboardCards = document.querySelectorAll('.dashboard-card');
+    const sectionIds = ['clases', 'tareas', 'anotaciones', 'historial'];
+    
+    dashboardCards.forEach((card, index) => {
+        if (sectionIds[index]) {
+            card.id = sectionIds[index];
+        }
+    });
+    
+    // Asignar ID al dashboard principal
+    const mainDashboard = document.querySelector('.main-dashboard');
+    if (mainDashboard) {
+        mainDashboard.id = 'dashboard';
+    }
+}
+
+// Modificar la función init para incluir navegación
+function init() {
+    updateMateriasSelects();
+    renderMaterias();
+    renderClases();
+    renderTareas();
+    renderAnotaciones();
+    renderHistorialTareas();
+    renderHistorialClases();
+    updateCounters();
+    checkUpcomingClasses();
+    checkUpcomingTareas();
+    
+    // Crear botón de actualización
+    crearBotonActualizacion();
+    
+    // Inicializar navegación
+    assignSectionIds();
+    initializeNavigation();
+    
+    // Actualización automática cada 30 segundos
+    setInterval(actualizarTodo, 30000);
+    
+    // Actualización de clases cada minuto
+    setInterval(checkUpcomingClasses, 60000);
+    setInterval(checkUpcomingTareas, 60000);
+}
+
+// Inicializar la aplicación
+init();
 });
+

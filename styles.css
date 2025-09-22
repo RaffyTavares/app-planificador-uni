@@ -1773,4 +1773,360 @@ textarea:focus {
     display: flex;
 }
 
-/* ===== FIN DE ESTILOS MODERNOS ===== */
+/* Agregar al final de tu archivo styles.css */
+.btn-refresh {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+}
+
+.btn-refresh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-refresh.spinning i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.sync-btn.spinning i {
+    animation: spin 1s linear infinite;
+}
+
+/* ===== NAVEGACIÓN MODERNA MEJORADA ===== */
+.main-nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--space-1);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    padding: var(--space-2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3) var(--space-5);
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-normal);
+    position: relative;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+}
+
+.nav-link.active::before {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* ===== SCROLL SUAVE MEJORADO ===== */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px; /* Espacio para el header fijo */
+}
+
+/* Efecto de scroll suave personalizado */
+.smooth-scroll {
+    scroll-behavior: smooth;
+}
+
+/* Indicador de sección activa */
+.section-indicator {
+    position: fixed;
+    right: var(--space-6);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.section-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+}
+
+.section-dot.active {
+    background: var(--primary-500);
+    border-color: white;
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.5);
+}
+
+.section-dot:hover {
+    background: var(--primary-400);
+    transform: scale(1.2);
+}
+
+.section-dot::after {
+    content: attr(data-section);
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--gray-900);
+    color: white;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--transition-normal);
+}
+
+.section-dot:hover::after {
+    opacity: 1;
+}
+
+/* ===== EFECTOS DE SECCIÓN AL HACER SCROLL ===== */
+.dashboard-card {
+    scroll-margin-top: 120px; /* Espacio para navegación */
+}
+
+/* Animación cuando la sección entra en vista */
+.dashboard-card.in-view {
+    animation: slideInFromBottom 0.6s ease-out;
+}
+
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== MEJORAS PARA NAVEGACIÓN RESPONSIVA ===== */
+@media (max-width: 992px) {
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--gray-900);
+        flex-direction: column;
+        padding: var(--space-4);
+        border-radius: var(--radius-xl);
+        margin-top: var(--space-2);
+        box-shadow: var(--shadow-xl);
+        backdrop-filter: blur(20px);
+    }
+
+    .nav-links.show {
+        display: flex;
+    }
+
+    .nav-link {
+        padding: var(--space-4) var(--space-5);
+        border-radius: var(--radius-lg);
+    }
+
+    .nav-link.active::before {
+        display: none;
+    }
+
+    /* Botón hamburguesa */
+    .mobile-menu-toggle {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-md);
+        padding: var(--space-3);
+        cursor: pointer;
+        transition: all var(--transition-normal);
+    }
+
+    .mobile-menu-toggle:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .hamburger-line {
+        width: 20px;
+        height: 2px;
+        background: white;
+        border-radius: 1px;
+        transition: all var(--transition-normal);
+    }
+
+    .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .mobile-menu-toggle.active .hamburger-line:nth-child(2) {
+        opacity: 0;
+    }
+
+    .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
+    }
+
+    .section-indicator {
+        display: none;
+    }
+}
+
+@media (min-width: 993px) {
+    .mobile-menu-toggle {
+        display: none;
+    }
+}
+
+/* ===== EFECTOS DE NAVEGACIÓN AVANZADOS ===== */
+.nav-link {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: width var(--transition-normal);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-link.active::after {
+    width: 100%;
+}
+
+/* Efecto de onda al hacer clic */
+.nav-link {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.nav-link:active::before {
+    width: 200px;
+    height: 200px;
+}
+
+/* ===== MEJORAS DE ACCESIBILIDAD PARA NAVEGACIÓN ===== */
+.nav-link:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+.section-dot:focus {
+    outline: 2px solid var(--primary-400);
+    outline-offset: 2px;
+}
+
+/* ===== ANIMACIONES DE ENTRADA PARA NAVEGACIÓN ===== */
+.nav-links {
+    animation: navSlideIn 0.5s ease-out;
+}
+
+@keyframes navSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nav-link {
+    animation: navItemFadeIn 0.6s ease-out backwards;
+}
+
+.nav-link:nth-child(1) { animation-delay: 0.1s; }
+.nav-link:nth-child(2) { animation-delay: 0.2s; }
+.nav-link:nth-child(3) { animation-delay: 0.3s; }
+.nav-link:nth-child(4) { animation-delay: 0.4s; }
+.nav-link:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes navItemFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
