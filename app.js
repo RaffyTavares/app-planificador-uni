@@ -24,6 +24,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar la aplicación
     function init() {
+        // Obtener las referencias a los contadores (que ya existen en el HTML)
+        materiasCount = document.getElementById('materiasCount');
+        pendingTasksCount = document.getElementById('pendingTasksCount');
+        todayClassesCount = document.getElementById('todayClassesCount');
+        
+        // Inicializar funcionalidades normalmente
         updateMateriasSelects();
         renderMaterias();
         renderClases();
@@ -31,26 +37,42 @@ document.addEventListener('DOMContentLoaded', function() {
         renderAnotaciones();
         renderHistorialTareas();
         renderHistorialClases();
-        updateCounters(); // Actualizar contadores
-        checkUpcomingClasses();
+        updateCounters(); // Ahora funcionará correctamente
+        checkUpcomingClases();
         checkUpcomingTareas();
-        setInterval(checkUpcomingClasses, 60000);
+        
+        // Crear botón de actualización
+        crearBotonActualizacion();
+        
+        // Inicializar navegación
+        assignSectionIds();
+        initializeNavigation();
+        
+        // Configurar actualizaciones automáticas
+        setInterval(actualizarTodo, 30000);
+        setInterval(checkUpcomingClases, 60000);
         setInterval(checkUpcomingTareas, 60000);
+        
+        console.log('Aplicación inicializada correctamente');
     }
-
-    
 
     // Función para actualizar contadores
     function updateCounters() {
-        if (materiasCount) materiasCount.textContent = materias.length;
-        if (pendingTasksCount) pendingTasksCount.textContent = tareas.filter(t => !t.completada).length;
+        const materiaCount = materias.length;
+        const pendingCount = tareas.filter(t => !t.completada).length;
         
         // Contar clases de hoy
         const hoy = new Date();
         const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
         const diaActual = diasSemana[hoy.getDay()];
-        const clasesHoy = clases.filter(c => c.dia === diaActual).length;
-        if (todayClassesCount) todayClassesCount.textContent = clasesHoy;
+        const clasesHoyCount = clases.filter(c => c.dia === diaActual).length;
+        
+        // Actualizar contadores (ya existen en el HTML)
+        if (materiasCount) materiasCount.textContent = materiaCount;
+        if (pendingTasksCount) pendingTasksCount.textContent = pendingCount;
+        if (todayClassesCount) todayClassesCount.textContent = clasesHoyCount;
+        
+        console.log(`Contadores actualizados: Materias=${materiaCount}, Tareas pendientes=${pendingCount}, Clases hoy=${clasesHoyCount}`);
     }
     
     // Cambiar entre modo claro y oscuro (actualizado)
@@ -1168,6 +1190,12 @@ function assignSectionIds() {
 
 // Modificar la función init para incluir navegación
 function init() {
+    // Obtener las referencias a los contadores (que ya existen en el HTML)
+    materiasCount = document.getElementById('materiasCount');
+    pendingTasksCount = document.getElementById('pendingTasksCount');
+    todayClassesCount = document.getElementById('todayClassesCount');
+    
+    // Inicializar funcionalidades normalmente
     updateMateriasSelects();
     renderMaterias();
     renderClases();
@@ -1175,8 +1203,8 @@ function init() {
     renderAnotaciones();
     renderHistorialTareas();
     renderHistorialClases();
-    updateCounters();
-    checkUpcomingClasses();
+    updateCounters(); // Ahora funcionará correctamente
+    checkUpcomingClases();
     checkUpcomingTareas();
     
     // Crear botón de actualización
@@ -1186,12 +1214,12 @@ function init() {
     assignSectionIds();
     initializeNavigation();
     
-    // Actualización automática cada 30 segundos
+    // Configurar actualizaciones automáticas
     setInterval(actualizarTodo, 30000);
-    
-    // Actualización de clases cada minuto
-    setInterval(checkUpcomingClasses, 60000);
+    setInterval(checkUpcomingClases, 60000);
     setInterval(checkUpcomingTareas, 60000);
+    
+    console.log('Aplicación inicializada correctamente');
 }
 
 // Inicializar la aplicación
