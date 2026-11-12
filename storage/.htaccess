@@ -1,0 +1,2 @@
+# Los archivos subidos solo se sirven a través de la API (con control de acceso)
+Require all denied

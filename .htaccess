@@ -1,0 +1,60 @@
+# =====================================================================
+# EduGestor Pro — configuración del servidor web
+# Compatible con Apache (XAMPP) y LiteSpeed (Hostinger).
+# =====================================================================
+
+Options -Indexes
+DirectoryIndex index.html
+AddType application/manifest+json .webmanifest
+AddDefaultCharset utf-8
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Fuerza HTTPS en producción (no en localhost)
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Carpetas internas: nunca accesibles desde el navegador
+    RewriteRule ^(storage|vendor|db|cron|dist)(/|$) - [F,L]
+    RewriteRule ^api/(rutas|lib)(/|$) - [F,L]
+    RewriteRule ^api/(?!index\.php) - [F,L]
+
+    # Archivos ocultos (.git, .env…) salvo .well-known (certificados SSL)
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
+    # Configuración, dependencias y documentación
+    RewriteRule ^(config(\.local)?\.php|composer\.(json|lock)|README\.md)$ - [F,L]
+</IfModule>
+
+# Respaldo por si mod_rewrite no estuviera disponible
+<FilesMatch "^(config(\.local)?\.php|composer\.(json|lock)|.*\.md|\.gitignore|\.htaccess)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+    # Política de contenido de la app (la API y las descargas envían la suya)
+    <FilesMatch "^(index\.html|install\.php)$">
+        Header always set X-Frame-Options "DENY"
+        Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-9GHTsTHm82L4uuCoFEuKuuK+4xSgf/0CbAmUfADFKNs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+    </FilesMatch>
+
+    # Interfaz: el navegador revalida siempre (los nombres de archivo no llevan versión)
+    <FilesMatch "\.(html|js|css|webmanifest)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+    <FilesMatch "\.(png|jpe?g|svg|ico)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+
+    # El service worker debe poder controlar toda la app
+    <Files "sw.js">
+        Header set Service-Worker-Allowed "/"
+    </Files>
+</IfModule>

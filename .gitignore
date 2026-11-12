@@ -1,0 +1,14 @@
+# Configuración local con contraseñas y claves
+config.local.php
+
+# Archivos subidos y bases de datos de desarrollo
+storage/*
+!storage/.htaccess
+!storage/index.html
+
+# Dependencias de Composer (se instalan con: composer install)
+/vendor/
+
+# Datos exportados para producción (correos y hashes de contraseñas) y paquetes generados
+db/datos.sql
+/dist/
