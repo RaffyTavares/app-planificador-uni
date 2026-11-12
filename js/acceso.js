@@ -3,7 +3,7 @@ import { $, $$, esc, plural } from './util.js';
 import { icon, hydrateIcons } from './iconos.js';
 import { api, setCsrf } from './api.js';
 import { validateField, mostrarErrorForm, openForm, toast, toastError } from './ui.js';
-import { app } from './estado.js';
+import { app, TIPOS_PERIODO } from './estado.js';
 
 let modo = 'login';
 
@@ -27,7 +27,7 @@ function pintar(raiz, alEntrar) {
     <div class="auth-art" aria-hidden="true">
         <div class="auth-art-inner">
             <span class="brand-mark lg"><img src="logo.jpeg" alt="" width="56" height="56"></span>
-            <h2 class="display">Tu semestre,<br><em>en calma y en orden.</em></h2>
+            <h2 class="display">Tu carrera,<br><em>en calma y en orden.</em></h2>
             <ul class="auth-points">
                 <li>${icon('calendar')}Horario, tareas y exámenes en un solo lugar</li>
                 <li>${icon('award')}Calificaciones e índice calculados al instante</li>
@@ -50,10 +50,12 @@ function pintar(raiz, alEntrar) {
             </div>`}
             <form class="form" id="authForm" novalidate>
                 ${registro ? campo('Nombre', `<input class="input" name="nombre" required maxlength="80" autocomplete="name" placeholder="Ej. Rafael Tavares">`) : ''}
-                ${campo('Correo', `<input class="input" type="email" name="email" required maxlength="190" autocomplete="email" placeholder="tucorreo@unad.edu.do">`)}
+                ${campo('Correo', `<input class="input" type="email" name="email" required maxlength="190" autocomplete="email" placeholder="tucorreo@universidad.edu">`)}
                 ${campo('Contraseña', `<div class="pass-wrap"><input class="input" type="password" name="password" required ${registro ? 'minlength="8"' : ''} autocomplete="${registro ? 'new-password' : 'current-password'}">
                     <button type="button" class="icon-btn sm" data-ver-pass aria-label="Mostrar contraseña">${icon('eye')}</button></div>`, registro ? 'Mínimo 8 caracteres.' : '')}
                 ${registro ? campo('Carrera', `<input class="input" name="carrera" maxlength="120" placeholder="Ej. Ingeniería de Sistemas">`, '', true) : ''}
+                ${registro ? campo('Universidad', `<input class="input" name="universidad" maxlength="120" placeholder="Ej. Universidad Adventista Dominicana">`, '', true) : ''}
+                ${registro ? campo('Tu universidad trabaja por', `<select class="select" name="periodo">${Object.entries(TIPOS_PERIODO).map(([k, t]) => `<option value="${k}" ${k === 'semestre' ? 'selected' : ''}>${t.varios.charAt(0).toUpperCase() + t.varios.slice(1)} (${t.desc})</option>`).join('')}</select>`, 'Puedes cambiarlo luego en Ajustes.') : ''}
                 <p class="form-error" role="alert"></p>
                 <button class="btn btn-primary btn-block" type="submit">${registro ? 'Crear cuenta' : 'Entrar'}${icon('arrow', 'arr')}</button>
             </form>

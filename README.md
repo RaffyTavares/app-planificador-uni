@@ -43,6 +43,7 @@ Es una aplicación web con **backend en PHP y MySQL** y **frontend en JavaScript
 - **Archivos por materia:** subida por arrastrar y soltar con barra de progreso, categorías (tareas, material de apoyo, documentos, otros) y vista previa de PDF e imágenes.
 - **Calificaciones:** evaluaciones con peso porcentual, nota acumulada, promedio, letra y la calculadora **"¿cuánto necesito para obtener una A?"**.
 - **Índice académico:** del semestre y **acumulado de toda la carrera**, ponderado por créditos y con escala configurable.
+- **Perfil académico por estudiante (Ajustes):** universidad, tipo de período (**semestre, cuatrimestre, trimestre, bimestre o año académico**: cambia los textos de toda la app, el nombre del período nuevo y los tramos del récord), créditos totales de la carrera (avance en Historial), formato de hora 12/24 y plantillas de escala de calificaciones. Sirve para estudiantes de cualquier universidad, no solo de la UNAD.
 - **Récord académico:** permite cargar semestres ya cursados con su nota final (en número o letra), incluso pegando la lista desde Excel o el portal.
 - **Asistencia:** se marca desde la agenda del día y avisa cuando te acercas al límite de ausencias.
 - **Notas (apuntes):** búsqueda, filtro por materia y conversión a tarjetas de repaso.
@@ -182,6 +183,8 @@ hPanel → Avanzado → **Cron Jobs** → comando personalizado, **cada minuto**
 ## Configuración
 
 `config.php` **detecta solo el entorno**: `localhost`, `127.0.0.1`, IPs privadas, `*.test` o `*.local` (o la línea de comandos en Windows) son **local**; cualquier otro dominio es **producción**. Cada entorno trae su servidor, base y usuario (producción: `u382859220_planif_uni` / `u382859220_edugestor` en `localhost`), y `debug` solo se activa en local. Se puede forzar con la variable de entorno `EDUGESTOR_ENTORNO=local|produccion`. Las contraseñas de cada entorno van en su propio `config.local.php`.
+
+La sección `academico` de `config.php` fija los valores iniciales del perfil de cada cuenta nueva (`universidad`, `periodo`, `formato_hora`); cada estudiante los cambia después en **Ajustes → Perfil académico**. Se guardan en la columna `usuarios.perfil` (JSON); los instaladores añaden esa columna a bases existentes automáticamente.
 
 La configuración está repartida en dos archivos que se combinan:
 

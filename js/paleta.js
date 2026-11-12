@@ -1,7 +1,7 @@
 /* Paleta de comandos (Ctrl/⌘ K): buscar en todo y ejecutar acciones. */
 import { $, $$, esc, norm } from './util.js';
 import { icon } from './iconos.js';
-import { db, app, mc, materiaName, dueLabel, fmtRange, sortTasks } from './estado.js';
+import { db, app, P, mc, materiaName, dueLabel, fmtRange, sortTasks } from './estado.js';
 import { showDialog, closeDialog } from './ui.js';
 import { RUTAS } from './rutas.js';
 import { openTareaForm, openClaseForm, openMateriaForm, openNotaForm, openEvaluacionForm, openTarjetaForm } from './formularios.js';
@@ -25,7 +25,7 @@ function fuente() {
         { g: 'Acciones', l: 'Registrar calificación', ic: 'award', run: () => openEvaluacionForm() },
         { g: 'Acciones', l: 'Nueva tarjeta de repaso', ic: 'layers', run: () => openTarjetaForm() },
         { g: 'Acciones', l: 'Empezar a estudiar (Pomodoro)', ic: 'timer', run: ir('enfoque') },
-        { g: 'Acciones', l: 'Agregar semestre cursado (récord de notas)', ic: 'history', run: () => import('./vistas/historial.js').then(m => m.openRecordForm()) },
+        { g: 'Acciones', l: `Agregar ${P().uno} cursado (récord de notas)`, ic: 'history', run: () => import('./vistas/historial.js').then(m => m.openRecordForm()) },
         { g: 'Acciones', l: 'Cambiar tema claro/oscuro', ic: 'sun', run: () => acciones.tema?.() },
         { g: 'Acciones', l: 'Exportar respaldo', ic: 'download', run: exportarRespaldo },
         { g: 'Acciones', l: 'Importar respaldo', ic: 'upload', run: () => acciones.importar?.() },

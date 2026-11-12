@@ -54,6 +54,7 @@ function auth_registro(): never
     $password = (string) ($d['password'] ?? '');
     validar_password($password);
     $carrera = texto($d, 'carrera', 120, false);
+    $perfil = json_encode(validar_perfil($d, perfil_usuario([])), JSON_UNESCAPED_UNICODE);
 
     if (valor('SELECT id FROM usuarios WHERE email = ?', [$email])) {
         fallar('Ya existe una cuenta con ese correo. Inicia sesión.', 409, ['campo' => 'email']);
@@ -64,6 +65,7 @@ function auth_registro(): never
         'email' => $email,
         'password_hash' => password_hash($password, PASSWORD_DEFAULT),
         'carrera' => $carrera,
+        'perfil' => $perfil,
         'creado_en' => ahora(),
     ]);
     session_regenerate_id(true);
@@ -137,6 +139,11 @@ function auth_perfil(): never
         }
     }
 
+    if (array_key_exists('perfil', $d)) {
+        $actual = perfil_usuario(fila('SELECT perfil FROM usuarios WHERE id = ?', [$u]));
+        $cambios['perfil'] = json_encode(validar_perfil((array) $d['perfil'], $actual), JSON_UNESCAPED_UNICODE);
+    }
+
     if (array_key_exists('pomodoro', $d)) {
         $p = (array) $d['pomodoro'];
         $cambios['pomodoro'] = json_encode([
@@ -150,6 +157,25 @@ function auth_perfil(): never
 
     if ($cambios) actualizar('usuarios', $cambios, 'id = ?', [$u]);
     responder(['usuario' => s_usuario(fila('SELECT * FROM usuarios WHERE id = ?', [$u]))]);
+}
+
+/** Valida los campos del perfil académico presentes en $d y los combina con $base. */
+function validar_perfil(array $d, array $base): array
+{
+    $p = $base;
+    if (array_key_exists('universidad', $d)) $p['universidad'] = texto($d, 'universidad', 120, false) ?? '';
+    if (array_key_exists('periodo', $d) && $d['periodo'] !== null && $d['periodo'] !== '') {
+        if (!isset(PERIODOS[$d['periodo']])) fallar('El tipo de período no es válido.', 422, ['campo' => 'periodo']);
+        $p['periodo'] = (string) $d['periodo'];
+    }
+    if (array_key_exists('formatoHora', $d)) {
+        if (!in_array((string) $d['formatoHora'], ['12', '24'], true)) fallar('El formato de hora debe ser 12 o 24.', 422, ['campo' => 'formatoHora']);
+        $p['formatoHora'] = (string) $d['formatoHora'];
+    }
+    if (array_key_exists('creditosCarrera', $d)) {
+        $p['creditosCarrera'] = entero($d, 'creditosCarrera', 1, 1000, false, 'Los créditos de la carrera');
+    }
+    return $p;
 }
 
 function auth_password(): never

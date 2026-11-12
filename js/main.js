@@ -5,7 +5,7 @@
 import { $, $$, esc, plural, toISO, nowMin, toMin, fmtDuration, reducedMotion } from './util.js';
 import { icon, hydrateIcons } from './iconos.js';
 import { api, on as onApi, setCsrf, refrescarCsrf } from './api.js';
-import { db, app, ui, cargarEstado, mc, materiaName, upcomingClass, whenText, durOf, overdueCount, pendingTasks, tarjetasPendientes, classesOnDay } from './estado.js';
+import { db, app, ui, cargarEstado, P, mc, materiaName, upcomingClass, whenText, durOf, overdueCount, pendingTasks, tarjetasPendientes, classesOnDay } from './estado.js';
 import { hooks, toast, toastError, prepararDialogos, showDialog, closeDialog } from './ui.js';
 import { accion, ejecutar, idDe } from './acciones.js';
 import { RUTAS, RUTAS_MOVIL, rutaActual } from './rutas.js';
@@ -55,6 +55,7 @@ function render({ enter = false } = {}) {
     const titulo = ruta === 'materias' && param ? (db.materias.find(m => m.id === Number(param))?.nombre || 'Materia') : RUTAS[ruta].titulo;
     $('#crumb').textContent = RUTAS[ruta].titulo;
     $('#semChip').textContent = db.semestre?.nombre || '';
+    $('#semChip').parentElement.title = `Cambiar de ${P().uno}`;
     document.title = `${titulo} · EduGestor Pro`;
     setTituloBase(document.title);
 
@@ -454,7 +455,7 @@ async function entrar(respuesta, esNuevo = false) {
     render({ enter: true });
     VISTAS[ui.route]?.alEntrar?.();
     recordatorios();
-    if (esNuevo) toast({ type: 'success', title: `¡Bienvenido, ${db.usuario.nombre.split(' ')[0]}!`, msg: 'Empieza por agregar tus materias o carga un semestre de ejemplo.' });
+    if (esNuevo) toast({ type: 'success', title: `¡Bienvenido, ${db.usuario.nombre.split(' ')[0]}!`, msg: `Empieza por agregar tus materias o carga un ${P().uno} de ejemplo.` });
     ofrecerMigracion((estado) => { cargarEstado(estado); render({ enter: true }); });
 }
 

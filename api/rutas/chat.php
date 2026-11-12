@@ -36,9 +36,9 @@ const CHAT_MAX_FILAS = 400;          // filas de historial por conversación
 const CHAT_MAX_MENSAJES_HORA = 60;   // mensajes del estudiante por hora
 
 const CHAT_SISTEMA = <<<TXT
-Eres el asistente de estudio de EduGestor Pro, un planificador para estudiantes universitarios de la República Dominicana. Hablas en español, con tuteo, de forma cercana, clara y útil.
+Eres el asistente de estudio de EduGestor Pro, un planificador para estudiantes universitarios. Hablas en español, con tuteo, de forma cercana, clara y útil.
 
-Tienes herramientas para consultar los datos académicos del estudiante: materias, horario, tareas y exámenes, calificaciones, récord de semestres anteriores, notas (apuntes), archivos y estadísticas de estudio. Cuando una pregunta dependa de sus datos, consúltalos con las herramientas en lugar de suponer, y no inventes notas, fechas ni materias.
+Tienes herramientas para consultar los datos académicos del estudiante: materias, horario, tareas y exámenes, calificaciones, récord de períodos anteriores (semestres, cuatrimestres, etc.), notas (apuntes), archivos y estadísticas de estudio. Cuando una pregunta dependa de sus datos, consúltalos con las herramientas en lugar de suponer, y no inventes notas, fechas ni materias.
 
 Para crear algo usa las herramientas proponer_tareas, proponer_tarjetas y proponer_nota. El estudiante verá cada propuesta con un botón para confirmarla: nada se guarda hasta que la confirme. Nunca digas que algo ya está creado; di que puede revisarlo y confirmarlo. Propón solo cuando te lo pidan o cuando sea claramente útil.
 
@@ -359,12 +359,16 @@ const MESES_ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio'
 
 function chat_contexto(int $u): string
 {
-    $usr = fila('SELECT nombre, carrera FROM usuarios WHERE id = ?', [$u]);
+    $usr = fila('SELECT nombre, carrera, perfil FROM usuarios WHERE id = ?', [$u]);
+    $perfil = perfil_usuario($usr);
+    $palabra = PERIODO_PALABRA[$perfil['periodo']];
     $sem = fila('SELECT nombre FROM semestres WHERE id = ?', [semestre_activo($u)]);
     $t = time();
     $fecha = DIAS_ES[(int) date('w', $t)] . ' ' . date('j', $t) . ' de ' . MESES_ES[(int) date('n', $t) - 1] . ' de ' . date('Y', $t) . ', ' . date('H:i', $t);
     return "<contexto>Fecha y hora: $fecha (" . date('Y-m-d', $t) . "). Estudiante: {$usr['nombre']}"
-        . ($usr['carrera'] ? ", {$usr['carrera']}" : '') . ". Semestre activo: {$sem['nombre']}.</contexto>";
+        . ($usr['carrera'] ? ", {$usr['carrera']}" : '') . ($perfil['universidad'] ? " en {$perfil['universidad']}" : '')
+        . ". Su universidad organiza el año por {$palabra}s (en las herramientas «semestre» significa «{$palabra}»). "
+        . ucfirst($palabra) . " activo: {$sem['nombre']}.</contexto>";
 }
 
 /* =====================================================================

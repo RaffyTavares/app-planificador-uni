@@ -15,6 +15,7 @@ CREATE TABLE usuarios (
     carrera VARCHAR(120) NULL,
     escala TEXT NULL,
     pomodoro TEXT NULL,
+    perfil TEXT NULL,
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

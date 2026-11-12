@@ -4,7 +4,7 @@
  * a los 7 segundos, lo que permite "Deshacer" sin endpoints especiales.
  */
 import { api, subir } from './api.js';
-import { db, app, cargarEstado, reemplazar, quitar, porId, pendingTasks } from './estado.js';
+import { db, app, cargarEstado, reemplazar, quitar, porId, pendingTasks, P } from './estado.js';
 import { toast, toastError, render, confirmDialog } from './ui.js';
 import { plural, descargar, hoyISO, daysUntil } from './util.js';
 
@@ -245,7 +245,7 @@ export async function exportarRespaldo() {
     try {
         const d = await api.get('exportar');
         descargar(`edugestor-respaldo-${hoyISO()}.json`, JSON.stringify(d, null, 2), 'application/json');
-        toast({ type: 'success', title: 'Respaldo descargado', msg: 'Contiene el semestre activo completo.' });
+        toast({ type: 'success', title: 'Respaldo descargado', msg: `Contiene el ${P().uno} activo completo.` });
     } catch (e) { toastError(e); }
 }
 
@@ -276,7 +276,7 @@ export function importarArchivo(file) {
         }
         const n = (k) => (Array.isArray(d[k]) ? d[k].length : 0);
         confirmDialog({
-            title: '¿Reemplazar el semestre activo?',
+            title: `¿Reemplazar el ${P().uno} activo?`,
             desc: `El respaldo trae ${plural(n('materias'), 'materia', 'materias')}, ${plural(n('clases'), 'clase', 'clases')}, ${plural(n('tareas'), 'tarea', 'tareas')} y ${plural(n('anotaciones'), 'nota', 'notas')}. Lo que hay ahora en «${db.semestre?.nombre || 'este semestre'}» se reemplazará.`,
             confirm: 'Importar',
             danger: false,
@@ -288,11 +288,11 @@ export function importarArchivo(file) {
 
 export async function cargarDemo() {
     const { construirDemo } = await import('./datos-ejemplo.js');
-    const aplicar = () => reemplazarSemestre(construirDemo(new Date()), { titulo: 'Semestre de ejemplo cargado', msg: 'Ingeniería de Sistemas · UNAD. Explora y edita libremente.' });
+    const aplicar = () => reemplazarSemestre(construirDemo(new Date()), { titulo: `${P().Uno} de ejemplo cargado`, msg: 'Ingeniería de Sistemas · UNAD. Explora y edita libremente.' });
     if (['materias', 'tareas', 'anotaciones'].some(k => db[k].length)) {
         confirmDialog({
             title: '¿Reemplazar con datos de ejemplo?',
-            desc: `Se cargará un semestre ficticio de la UNAD en «${db.semestre?.nombre}» y se reemplazará lo que tiene ahora. Podrás deshacerlo durante unos segundos.`,
+            desc: `Se cargará un ${P().uno} ficticio de la UNAD en «${db.semestre?.nombre}» y se reemplazará lo que tiene ahora. Podrás deshacerlo durante unos segundos.`,
             confirm: 'Cargar ejemplo', danger: false, onConfirm: aplicar,
         });
     } else {
@@ -304,9 +304,9 @@ export function borrarSemestre() {
     const total = ['materias', 'tareas', 'anotaciones', 'flashcards'].reduce((s, k) => s + db[k].length, 0);
     confirmDialog({
         title: `¿Vaciar «${db.semestre?.nombre}»?`,
-        desc: `Se eliminarán ${plural(total, 'registro', 'registros')} de este semestre (materias con sus clases, calificaciones y archivos; tareas, notas y tarjetas). Podrás deshacerlo durante unos segundos, salvo los archivos.`,
-        confirm: 'Vaciar semestre',
-        onConfirm: () => reemplazarSemestre({ materias: [], clases: [], tareas: [], anotaciones: [] }, { titulo: 'Semestre vaciado' }),
+        desc: `Se eliminarán ${plural(total, 'registro', 'registros')} de este ${P().uno} (materias con sus clases, calificaciones y archivos; tareas, notas y tarjetas). Podrás deshacerlo durante unos segundos, salvo los archivos.`,
+        confirm: `Vaciar ${P().uno}`,
+        onConfirm: () => reemplazarSemestre({ materias: [], clases: [], tareas: [], anotaciones: [] }, { titulo: `${P().Uno} vaciado` }),
     });
 }
 

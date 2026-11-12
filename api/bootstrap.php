@@ -218,19 +218,43 @@ function semestre_activo(?int $usuario = null): int
     }
     return insertar('semestres', [
         'usuario_id' => $usuario,
-        'nombre' => nombre_semestre_actual(),
+        'nombre' => nombre_semestre_actual(perfil_usuario(fila('SELECT perfil FROM usuarios WHERE id = ?', [$usuario]) ?: [])['periodo']),
         'activo' => 1,
         'creado_en' => ahora(),
     ]);
 }
 
-function nombre_semestre_actual(): string
+/** Tipos de período académico y sus tramos del año: [nombre, mes inicial, mes final]. */
+const PERIODOS = [
+    'semestre' => [['Enero – Junio', 1, 6], ['Agosto – Diciembre', 7, 12]],
+    'cuatrimestre' => [['Enero – Abril', 1, 4], ['Mayo – Agosto', 5, 8], ['Septiembre – Diciembre', 9, 12]],
+    'trimestre' => [['Enero – Marzo', 1, 3], ['Abril – Junio', 4, 6], ['Julio – Septiembre', 7, 9], ['Octubre – Diciembre', 10, 12]],
+    'bimestre' => [['Enero – Febrero', 1, 2], ['Marzo – Abril', 3, 4], ['Mayo – Junio', 5, 6], ['Julio – Agosto', 7, 8], ['Septiembre – Octubre', 9, 10], ['Noviembre – Diciembre', 11, 12]],
+    'anual' => [['Año', 1, 12]],
+];
+const PERIODO_PALABRA = ['semestre' => 'semestre', 'cuatrimestre' => 'cuatrimestre', 'trimestre' => 'trimestre', 'bimestre' => 'bimestre', 'anual' => 'año académico'];
+
+/** Perfil académico de un usuario con los valores por defecto del servidor. */
+function perfil_usuario(array $u): array
+{
+    $guardado = !empty($u['perfil']) ? (json_decode($u['perfil'], true) ?: []) : [];
+    $perfil = $guardado + [
+        'universidad' => (string) (config('academico.universidad') ?? ''),
+        'periodo' => (string) (config('academico.periodo') ?: 'semestre'),
+        'formatoHora' => (string) (config('academico.formato_hora') ?: '12'),
+        'creditosCarrera' => null,
+    ];
+    if (!isset(PERIODOS[$perfil['periodo']])) $perfil['periodo'] = 'semestre';
+    return $perfil;
+}
+
+function nombre_semestre_actual(string $tipo = 'semestre'): string
 {
     $m = (int) date('n');
-    $anio = date('Y');
-    // Calendario típico: ene–abr, may–ago, sep–dic
-    $periodo = $m <= 4 ? 'Enero – Abril' : ($m <= 8 ? 'Mayo – Agosto' : 'Septiembre – Diciembre');
-    return "$periodo $anio";
+    foreach (PERIODOS[$tipo] ?? PERIODOS['semestre'] as [$nombre, $desde, $hasta]) {
+        if ($m >= $desde && $m <= $hasta) return "$nombre " . date('Y');
+    }
+    return date('Y');
 }
 
 /** Comprueba que un registro pertenece al usuario y lo devuelve. */
@@ -469,6 +493,7 @@ function s_usuario(array $u): array
         'carrera' => $u['carrera'] ?? '',
         'escala' => $u['escala'] ? json_decode($u['escala'], true) : null,
         'pomodoro' => $u['pomodoro'] ? json_decode($u['pomodoro'], true) : null,
+        'perfil' => perfil_usuario($u),
     ];
 }
 

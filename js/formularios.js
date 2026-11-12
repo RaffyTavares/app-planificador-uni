@@ -2,7 +2,7 @@
 import { $, $$, esc, fmtDuration, fmtTime, toISO, addDays, DIAS, DIAS_CORTO, WEEK, fmtBytes } from './util.js';
 import { icon, iconoArchivo } from './iconos.js';
 import { api } from './api.js';
-import {
+import { P,
     db, ui, HUES, HUE_LABEL, hueOf, nextFreeHue, materiaName, overlapsFor, fmtRange, PRIO_LABEL, REC_LABEL, archivosDeTarea, reemplazar,
 } from './estado.js';
 import { openForm, field, toast, toastError, render } from './ui.js';
@@ -425,9 +425,9 @@ export async function openCompartir(tipo, id) {
    ===================================================================== */
 export function openSemestreForm(s = null) {
     openForm({
-        eyebrow: s ? 'Editar semestre' : 'Nuevo semestre',
-        title: s ? esc(s.nombre) : 'Empieza un nuevo semestre',
-        desc: s ? '' : 'El semestre actual queda archivado con sus notas e índice. Puedes volver a él cuando quieras.',
+        eyebrow: s ? `Editar ${P().uno}` : `Nuevo ${P().uno}`,
+        title: s ? esc(s.nombre) : `Empieza un nuevo ${P().uno}`,
+        desc: s ? '' : `El ${P().uno} actual queda archivado con sus notas e índice. Puedes volver a él cuando quieras.`,
         submit: s ? 'Guardar' : 'Crear y cambiar',
         body: `
             ${field({ label: 'Nombre', control: `<input class="input" name="nombre" required maxlength="80" placeholder="Ej. Enero – Abril 2027" value="${esc(s?.nombre)}">` })}
@@ -435,7 +435,7 @@ export function openSemestreForm(s = null) {
                 ${field({ label: 'Inicio', optional: true, control: `<input class="input" type="date" name="inicio" value="${esc(s?.inicio || '')}">` })}
                 ${field({ label: 'Fin', optional: true, control: `<input class="input" type="date" name="fin" value="${esc(s?.fin || '')}">` })}
             </div>
-            ${s ? '' : `<label class="check-line"><input type="checkbox" name="copiarMaterias" value="1"><span>Copiar las materias del semestre actual (sin clases, tareas ni notas)</span></label>`}`,
+            ${s ? '' : `<label class="check-line"><input type="checkbox" name="copiarMaterias" value="1"><span>Copiar las materias del ${P().uno} actual (sin clases, tareas ni notas)</span></label>`}`,
         async onSubmit(d) {
             const { cargarEstado } = await import('./estado.js');
             if (s) {
@@ -447,7 +447,7 @@ export function openSemestreForm(s = null) {
             } else {
                 cargarEstado(await api.post('semestres', { nombre: d.nombre, inicio: d.inicio || null, fin: d.fin || null, copiarMaterias: !!d.copiarMaterias }));
                 render({ enter: true });
-                toast({ type: 'success', title: 'Nuevo semestre activo', msg: d.nombre });
+                toast({ type: 'success', title: `Nuevo ${P().uno} activo`, msg: d.nombre });
             }
         },
     });

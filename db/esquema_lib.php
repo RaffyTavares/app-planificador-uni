@@ -24,6 +24,11 @@ function esquema(string $driver): array
     }, $sentencias);
 }
 
+/** Columnas añadidas en versiones posteriores: se agregan a las tablas existentes. */
+const COLUMNAS_NUEVAS = [
+    'usuarios' => ['perfil' => 'TEXT NULL'],
+];
+
 function aplicar_esquema(PDO $pdo, string $driver): int
 {
     // Tablas con el mismo nombre pero de otra versión: se avisa en lugar de fallar a medias
@@ -45,6 +50,14 @@ function aplicar_esquema(PDO $pdo, string $driver): int
             $pdo->exec($s);
         }
         $n++;
+    }
+    foreach (COLUMNAS_NUEVAS as $t => $cols) {
+        $existentes = $driver === 'sqlite'
+            ? array_column($pdo->query("PRAGMA table_info(`$t`)")->fetchAll(PDO::FETCH_ASSOC), 'name')
+            : $pdo->query("SHOW COLUMNS FROM `$t`")->fetchAll(PDO::FETCH_COLUMN);
+        foreach ($cols as $col => $def) {
+            if (!in_array($col, $existentes, true)) { $pdo->exec("ALTER TABLE `$t` ADD COLUMN `$col` $def"); $n++; }
+        }
     }
     return $n;
 }

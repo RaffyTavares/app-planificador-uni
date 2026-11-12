@@ -47,8 +47,13 @@ export const toMin = (hhmm) => {
 export const minToHHMM = (min) => `${pad(Math.floor(min / 60) % 24)}:${pad(min % 60)}`;
 export const nowMin = () => { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); };
 
+let hora24 = false;
+/** Formato de hora del estudiante: true = 14:30, false = 2:30 PM. */
+export const setHora24 = (v) => { hora24 = !!v; };
+
 export function fmtTime(hhmm) {
     const [h, m] = String(hhmm || '00:00').split(':').map(Number);
+    if (hora24) return `${pad(h || 0)}:${pad(m || 0)}`;
     return `${(h % 12) || 12}:${pad(m || 0)} ${h >= 12 ? 'PM' : 'AM'}`;
 }
 

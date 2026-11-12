@@ -1,7 +1,7 @@
 /* Vista: Calificaciones, índice académico y calculadora de "¿cuánto necesito?". */
 import { esc, fmtNota, fmtDate, plural } from '../util.js';
 import { icon } from '../iconos.js';
-import { db, ui, mc, escala, notaMateria, notaNecesaria, indiceSemestre, indiceAcumulado, letraDe, notaAprobatoria } from '../estado.js';
+import { db, ui, P, mc, escala, notaMateria, notaNecesaria, indiceSemestre, indiceAcumulado, letraDe, notaAprobatoria } from '../estado.js';
 import { emptyState, pageHead, render } from '../ui.js';
 import { notaChip } from '../componentes.js';
 import { accion } from '../acciones.js';
@@ -24,15 +24,15 @@ function renderCal() {
     return head + `
     <section class="gpa rise" style="--i:1">
         <div class="gpa-card">
-            <p class="eyebrow">Índice del semestre</p>
+            <p class="eyebrow">Índice del ${P().uno}</p>
             <b class="gpa-num">${sem.valor == null ? '—' : fmtNota(sem.valor, 2)}</b>
             <p>${sem.valor == null ? 'Aún no hay notas registradas' : `${sem.proyectado ? 'Proyectado con lo evaluado' : 'Final'} · ${sem.creditos} créditos`}</p>
         </div>
         <div class="gpa-card">
             <p class="eyebrow">Índice acumulado</p>
             <b class="gpa-num">${acu.valor == null ? '—' : fmtNota(acu.valor, 2)}</b>
-            <p>${acu.valor == null ? 'Se calcula con todos tus semestres' : `${plural(db.semestres.length, 'semestre', 'semestres')} · ${acu.creditos} créditos`}</p>
-            <a class="link-btn" href="#/historial">${icon('history')}Récord y semestres anteriores</a>
+            <p>${acu.valor == null ? `Se calcula con todos tus ${P().varios}` : `${plural(db.semestres.length, P().uno, P().varios)} · ${acu.creditos} créditos`}</p>
+            <a class="link-btn" href="#/historial">${icon('history')}Récord y ${P().varios} anteriores</a>
         </div>
         <div class="gpa-scale" aria-label="Escala de calificaciones">
             <p class="eyebrow">Escala <a class="link-btn" href="#/ajustes">Ajustar</a></p>
@@ -40,7 +40,7 @@ function renderCal() {
         </div>
     </section>
 
-    ${!db.materias.length ? `<section class="panel rise" style="--i:2">${emptyState({ ic: 'award', title: 'Aún no hay materias en este semestre', text: 'Agrega las materias que estás cursando para registrar sus evaluaciones. Las notas de semestres anteriores van en el récord.', action: `<button class="btn btn-primary" type="button" data-action="new" data-type="materia">${icon('plus')}Agregar materia</button><button class="btn btn-ghost" type="button" data-action="record-nuevo">${icon('history')}Agregar semestre cursado</button>` })}</section>` : `
+    ${!db.materias.length ? `<section class="panel rise" style="--i:2">${emptyState({ ic: 'award', title: `Aún no hay materias en este ${P().uno}`, text: 'Agrega las materias que estás cursando para registrar sus evaluaciones. Las notas de semestres anteriores van en el récord.', action: `<button class="btn btn-primary" type="button" data-action="new" data-type="materia">${icon('plus')}Agregar materia</button><button class="btn btn-ghost" type="button" data-action="record-nuevo">${icon('history')}Agregar semestre cursado</button>` })}</section>` : `
     <section class="panel rise" style="--i:2">
         <div class="table-wrap">
         <table class="grades-table">

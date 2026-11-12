@@ -3,7 +3,7 @@
  * Nada de esto se guarda en localStorage: la fuente de verdad es el servidor.
  */
 import {
-    DIAS, toISO, fromISO, fromDateTime, startOfDay, addDays, daysUntil, toMin, nowMin, fmtTime, fmtDuration, pad, hoyISO, lunesDe,
+    DIAS, toISO, fromISO, fromDateTime, startOfDay, addDays, daysUntil, toMin, nowMin, fmtTime, fmtDuration, pad, hoyISO, lunesDe, setHora24,
 } from './util.js';
 
 export const COLECCIONES = ['materias', 'clases', 'tareas', 'anotaciones', 'evaluaciones', 'asistencias', 'sesiones', 'flashcards', 'archivos'];
@@ -26,7 +26,41 @@ export function cargarEstado(e) {
     ['usuario', 'semestre', 'semestres', 'historico', 'usoAlmacenamiento', 'cuotaAlmacenamiento'].forEach(k => { if (k in e) db[k] = e[k]; });
     if ('ia' in e) app.ia = e.ia;
     if ('pushKey' in e) app.pushKey = e.pushKey;
+    aplicarPerfil();
     app.cargado = true;
+}
+
+/* ---------- Perfil académico (universidad, tipo de período, formato de hora) ---------- */
+export const TIPOS_PERIODO = {
+    semestre: { uno: 'semestre', varios: 'semestres', desc: '2 al año' },
+    cuatrimestre: { uno: 'cuatrimestre', varios: 'cuatrimestres', desc: '3 al año' },
+    trimestre: { uno: 'trimestre', varios: 'trimestres', desc: '4 al año' },
+    bimestre: { uno: 'bimestre', varios: 'bimestres', desc: '6 al año' },
+    anual: { uno: 'año académico', varios: 'años académicos', desc: '1 al año' },
+};
+
+/** Tramos del año de cada tipo de período: [clave, nombre, inicio MM-DD, fin MM-DD]. */
+export const TRAMOS = {
+    semestre: [['ene-jun', 'Enero – Junio', '01-08', '06-30'], ['ago-dic', 'Agosto – Diciembre', '08-01', '12-20'], ['verano', 'Verano', '06-01', '07-31']],
+    cuatrimestre: [['ene-abr', 'Enero – Abril', '01-08', '04-30'], ['may-ago', 'Mayo – Agosto', '05-01', '08-31'], ['sep-dic', 'Septiembre – Diciembre', '09-01', '12-20'], ['verano', 'Verano', '06-01', '07-31']],
+    trimestre: [['ene-mar', 'Enero – Marzo', '01-08', '03-31'], ['abr-jun', 'Abril – Junio', '04-01', '06-30'], ['jul-sep', 'Julio – Septiembre', '07-01', '09-30'], ['oct-dic', 'Octubre – Diciembre', '10-01', '12-20']],
+    bimestre: [['ene-feb', 'Enero – Febrero', '01-08', '02-28'], ['mar-abr', 'Marzo – Abril', '03-01', '04-30'], ['may-jun', 'Mayo – Junio', '05-01', '06-30'],
+        ['jul-ago', 'Julio – Agosto', '07-01', '08-31'], ['sep-oct', 'Septiembre – Octubre', '09-01', '10-31'], ['nov-dic', 'Noviembre – Diciembre', '11-01', '12-20']],
+    anual: [['anual', 'Año', '01-08', '12-20']],
+};
+
+export const perfil = () => ({ universidad: '', periodo: 'semestre', formatoHora: '12', creditosCarrera: null, ...(db.usuario?.perfil || {}) });
+
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+/** Palabras del período del estudiante: P().uno → "cuatrimestre", P().Varios → "Cuatrimestres". */
+export function P() {
+    const t = TIPOS_PERIODO[perfil().periodo] || TIPOS_PERIODO.semestre;
+    return { uno: t.uno, varios: t.varios, Uno: cap(t.uno), Varios: cap(t.varios) };
+}
+
+/** Aplica las preferencias que afectan al formato (llamar tras cambiar db.usuario). */
+export function aplicarPerfil() {
+    setHora24(perfil().formatoHora === '24');
 }
 
 /* ---------- Helpers de colecciones ---------- */

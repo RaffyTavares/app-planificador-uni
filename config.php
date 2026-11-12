@@ -65,6 +65,15 @@ return [
         'sqlite_path' => __DIR__ . '/storage/edugestor.sqlite',
     ],
 
+    // Valores iniciales del perfil académico de cada cuenta nueva (cada estudiante los cambia en Ajustes)
+    'academico' => [
+        'universidad' => '',
+        // semestre | cuatrimestre | trimestre | bimestre | anual
+        'periodo' => 'semestre',
+        // '12' (2:30 PM) o '24' (14:30)
+        'formato_hora' => '12',
+    ],
+
     'uploads' => [
         'dir' => __DIR__ . '/storage/uploads',
         // Tamaño máximo por archivo (debe ser menor que upload_max_filesize de PHP)

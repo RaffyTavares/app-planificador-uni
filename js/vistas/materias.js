@@ -1,7 +1,7 @@
 /* Vista: Materias (lista) y detalle de una materia (archivos, notas, asistencia…). */
 import { $, $$, esc, plural, fmtHours, fmtBytes, fmtNota, fmtDate, fmtDuration, fmtCorto, DIAS } from '../util.js';
 import { icon } from '../iconos.js';
-import {
+import { P,
     db, ui, app, mc, materiaById, durOf, fmtRange, notaMateria, asistenciaMateria, fechasDeClase, marcaAsistencia,
     sortTasks, letraDe, minutosSemanaPorMateria,
 } from '../estado.js';
@@ -23,7 +23,7 @@ export default {
 function lista() {
     const creditos = db.materias.reduce((s, m) => s + (Number(m.creditos) || 0), 0);
     const head = pageHead({
-        eyebrow: 'Materias del semestre',
+        eyebrow: `Materias del ${P().uno}`,
         title: 'Tus materias, <em>en orden</em>',
         lead: `${plural(db.materias.length, 'materia', 'materias')}${creditos ? ` · ${creditos} créditos` : ''}`,
         actions: newBtn('materia', 'Materia'),
@@ -67,7 +67,7 @@ function lista() {
         </article>`;
     }).join('')}
         <button class="mat-card mat-add rise" style="--i:${Math.min(db.materias.length + 1, 10)}" type="button" data-action="new" data-type="materia">
-            <span class="mat-swatch">${icon('plus')}</span><strong>Nueva materia</strong><p>Agrega otra asignatura a tu semestre</p>
+            <span class="mat-swatch">${icon('plus')}</span><strong>Nueva materia</strong><p>Agrega otra asignatura a tu ${P().uno}</p>
         </button>
     </div>`;
 }
@@ -85,7 +85,7 @@ const TABS = [
 
 function detalle(id) {
     const m = db.materias.find(x => x.id === id);
-    if (!m) return emptyState({ ic: 'book', size: 'lg', title: 'Esta materia no existe', text: 'Puede que la hayas eliminado o pertenezca a otro semestre.', action: '<a class="btn btn-primary" href="#/materias">Ver materias</a>' });
+    if (!m) return emptyState({ ic: 'book', size: 'lg', title: 'Esta materia no existe', text: `Puede que la hayas eliminado o pertenezca a otro ${P().uno}.`, action: '<a class="btn btn-primary" href="#/materias">Ver materias</a>' });
     const nArch = db.archivos.filter(a => a.materiaId === id).length;
     const nNotas = db.anotaciones.filter(a => a.materiaId === id).length;
     const cuenta = { archivos: nArch, notas: nNotas, calificaciones: db.evaluaciones.filter(e => e.materiaId === id).length };

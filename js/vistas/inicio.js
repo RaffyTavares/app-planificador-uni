@@ -1,7 +1,7 @@
 /* Vista: Inicio — resumen del día. */
 import { $, esc, plural, daysUntil, fmtDuration, fmtNota, fmtDate } from '../util.js';
 import { icon } from '../iconos.js';
-import {
+import { P,
     db, mc, materiaName, classesOnDay, classStatus, upcomingClass, whenText, countdownParts, durOf, fmtRange,
     pendingTasks, overdueCount, sortTasks, proximosExamenes, indiceSemestre, minutosHoy, pomodoroConfig, tarjetasPendientes, racha,
 } from '../estado.js';
@@ -37,7 +37,7 @@ function render() {
     const r = racha();
 
     let resumen;
-    if (!db.materias.length) resumen = 'empecemos a organizar tu semestre.';
+    if (!db.materias.length) resumen = `empecemos a organizar tu ${P().uno}.`;
     else if (!hoyCls.length && !dueToday) resumen = 'hoy tienes el día libre.';
     else {
         const partes = [];
@@ -67,7 +67,7 @@ function render() {
     ${primero >= 0 ? `
     <section class="panel onboarding rise" style="--i:1" aria-labelledby="obTitle">
         <p class="eyebrow">Ruta de inicio</p>
-        <h2 id="obTitle">Configura tu semestre en tres pasos</h2>
+        <h2 id="obTitle">Configura tu ${P().uno} en tres pasos</h2>
         <ol class="steps">
             ${pasos.map((p, i) => `<li class="step ${p.hecho ? 'is-done' : ''}">
                 <span class="step-n">0${i + 1}</span>
@@ -76,7 +76,7 @@ function render() {
                     : `<button class="btn btn-sm ${primero === i ? 'btn-primary' : 'btn-ghost'}" type="button" data-action="new" data-type="${p.tipo}">${icon('plus')}${p.cta}</button>`}
             </li>`).join('')}
         </ol>
-        ${!db.materias.length ? `<p class="ob-demo">¿Solo quieres explorar? <button class="link-btn" type="button" data-action="demo">Carga un semestre de ejemplo de la UNAD ${icon('arrow')}</button></p>` : ''}
+        ${!db.materias.length ? `<p class="ob-demo">¿Solo quieres explorar? <button class="link-btn" type="button" data-action="demo">Carga un ${P().uno} de ejemplo ${icon('arrow')}</button></p>` : ''}
     </section>` : ''}
 
     <section class="stats" aria-label="Resumen">

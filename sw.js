@@ -5,7 +5,7 @@
  *   (la app queda en modo solo lectura).
  * - Push: al recibir un aviso, pide las notificaciones pendientes a la API.
  */
-const VERSION = 'edugestor-v4';
+const VERSION = 'edugestor-v5';
 const SHELL = [
     './', 'index.html', 'styles.css', 'manifest.webmanifest', 'logo.jpeg', 'icons/icon-192.png', 'icons/icon-512.png',
     'js/main.js', 'js/util.js', 'js/iconos.js', 'js/api.js', 'js/estado.js', 'js/ui.js', 'js/acciones.js', 'js/datos.js',
