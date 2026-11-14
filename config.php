@@ -96,6 +96,11 @@ return [
         // low | medium | high — profundidad de razonamiento (y coste)
         'esfuerzo' => 'medium',
         'max_tokens' => 16000,
+        // Búsqueda y lectura de páginas web (investigar temas con fuentes). Cada búsqueda tiene coste.
+        'web' => true,
+        // Máximo de búsquedas y de páginas leídas por respuesta
+        'web_max_busquedas' => 5,
+        'web_max_paginas' => 5,
     ],
 
     'push' => [

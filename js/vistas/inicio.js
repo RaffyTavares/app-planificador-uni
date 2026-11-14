@@ -12,8 +12,7 @@ export default {
     titulo: 'Inicio',
     render,
     live() {
-        const card = $('#nowCard');
-        if (card) card.innerHTML = nowCardHTML(card);
+        for (const card of [$('#nowCard'), $('#nowCardHero')]) if (card) card.innerHTML = nowCardHTML(card);
         const ag = $('#agendaToday');
         if (ag) ag.innerHTML = agendaTodayHTML();
     },
@@ -54,7 +53,9 @@ function render() {
     const primero = pasos.findIndex(p => !p.hecho);
     const L = 2 * Math.PI * 34;
 
+    const up = upcomingClass();
     return `
+    <div class="hero-row">
     <header class="hero rise" style="--i:0">
         <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span>${esc(now.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' }))} · ${esc(db.semestre?.nombre || '')}</p>
         <h1 class="display">${esc(saludo)},<br><em>${esc(resumen)}</em></h1>
@@ -63,6 +64,9 @@ function render() {
             <a class="btn btn-ghost" href="#/enfoque">${icon('timer')}Empezar a estudiar</a>
         </div>
     </header>
+    <!-- En PC la próxima clase va junto al saludo; en móvil sigue en su lugar del tablero -->
+    <section class="panel now-card now-card--hero rise" style="--i:1;${up ? mc(up.clase.materiaId) : ''}" id="nowCardHero" aria-live="polite">${nowCardHTML()}</section>
+    </div>
 
     ${primero >= 0 ? `
     <section class="panel onboarding rise" style="--i:1" aria-labelledby="obTitle">
@@ -112,7 +116,7 @@ function render() {
 
     <div class="dash-grid">
         <div class="dash-col">
-            <section class="panel now-card rise" style="--i:6;${upcomingClass() ? mc(upcomingClass().clase.materiaId) : ''}" id="nowCard" aria-live="polite">${nowCardHTML()}</section>
+            <section class="panel now-card now-card--tablero rise" style="--i:6;${up ? mc(up.clase.materiaId) : ''}" id="nowCard" aria-live="polite">${nowCardHTML()}</section>
             <section class="panel rise" style="--i:7" aria-labelledby="agTitle">
                 <div class="panel-head">
                     <h2 id="agTitle">Agenda de hoy <span class="count">${hoyCls.length}</span></h2>
@@ -155,7 +159,7 @@ function render() {
                     <a class="link-btn" href="#/notas">Ver todas ${icon('arrow')}</a>
                 </div>
                 ${db.anotaciones.length
-                    ? `<ul class="note-list-compact">${[...db.anotaciones].sort((a, b) => b.id - a.id).slice(0, 3).map(n => `<li><button class="note-mini" type="button" style="${mc(n.materiaId)}" data-action="edit" data-type="nota" data-id="${n.id}">
+                    ? `<ul class="note-list-compact">${[...db.anotaciones].sort((a, b) => b.id - a.id).slice(0, 3).map(n => `<li><button class="note-mini" type="button" style="${mc(n.materiaId)}" data-action="ver-nota" data-id="${n.id}">
                         <strong>${esc(n.titulo)}</strong><p>${esc(n.contenido)}</p></button></li>`).join('')}</ul>`
                     : emptyState({ ic: 'note', title: 'Sin notas todavía', text: 'Guarda ideas, fórmulas o recordatorios.', action: newBtn('nota', 'Nueva nota', 'btn btn-ghost btn-sm') })}
             </section>

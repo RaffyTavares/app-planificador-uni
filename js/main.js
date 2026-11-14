@@ -2,6 +2,7 @@
  * EduGestor Pro — punto de entrada.
  * Arranque, sesión, enrutado, render, eventos globales y tareas periódicas.
  */
+import { iniciarActualizaciones } from './actualizacion.js';
 import { $, $$, esc, plural, toISO, nowMin, toMin, fmtDuration, reducedMotion } from './util.js';
 import { icon, hydrateIcons } from './iconos.js';
 import { api, on as onApi, setCsrf, refrescarCsrf } from './api.js';
@@ -212,6 +213,8 @@ function cambiarTema() {
         document.documentElement.setAttribute('data-theme', sig);
         try { localStorage.setItem('theme', sig); } catch { /* preferencia de este dispositivo */ }
         $('meta[name="theme-color"]').content = sig === 'dark' ? '#0b1215' : '#f2f7f6';
+        // En iPhone la barra de estado se aplica al volver a abrir la app instalada
+        $('meta[name="apple-mobile-web-app-status-bar-style"]').content = sig === 'dark' ? 'black-translucent' : 'default';
     };
     if (document.startViewTransition && !reducedMotion()) document.startViewTransition(aplicar); else aplicar();
 }
@@ -469,7 +472,7 @@ async function arrancar() {
     eventos();
 
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-        navigator.serviceWorker.register('sw.js').catch(() => { /* la app funciona igual sin SW */ });
+        iniciarActualizaciones();
         navigator.serviceWorker.addEventListener('message', (e) => {
             if (e.data?.tipo === 'navegar' && e.data.url) location.hash = e.data.url.replace(/^.*#/, '#');
         });

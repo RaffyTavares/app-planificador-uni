@@ -5,15 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="description" content="EduGestor Pro: planificador universitario para organizar materias, horario, tareas, calificaciones, archivos y estudio.">
     <meta name="theme-color" content="#0b1215">
+    <!-- App instalada (iOS/Android): pantalla completa, barra de estado translúcida sobre la cabecera -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EduGestor">
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
     <title>EduGestor Pro · Planificador universitario</title>
 
     <!-- Aplica el tema guardado antes de pintar (preferencia de este dispositivo) -->
     <script>
         (function () {
-            try {
-                var t = localStorage.getItem('theme');
-                if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-            } catch (e) {}
+            var t = null;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+            // Tema claro: barra de estado con texto oscuro (la translúcida siempre lo pone blanco)
+            var claro = t === 'light' || (t !== 'dark' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+            if (claro) {
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f2f7f6');
+                document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]').setAttribute('content', 'default');
+            }
         })();
     </script>
 
@@ -24,7 +35,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon-192.png" type="image/png">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 </head>
 <body>
     <a class="skip" href="#main">Saltar al contenido</a>

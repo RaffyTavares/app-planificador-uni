@@ -62,7 +62,11 @@ async function pedir(metodo, ruta, cuerpo, { reintento = true, keepalive = false
 
 export async function refrescarCsrf() {
     const r = await fetch(url('sesion'), { credentials: 'same-origin' });
-    const d = await r.json();
+    let d = {};
+    try { d = await r.json(); } catch { /* respuesta no JSON */ }
+    // Si el servidor falla (p. ej. sin acceso a la base de datos), se muestra ese error real
+    // en lugar de quedarse sin token y avisar luego de una "sesión expirada".
+    if (!r.ok) throw new ErrorApi(d.error || `Error ${r.status}`, r.status, d);
     setCsrf(d.csrf);
     return d;
 }

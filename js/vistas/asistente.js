@@ -20,15 +20,27 @@ const chat = {
     enviando: null,       // { texto, herramientas, propuestas, aviso, error, controlador }
     borrador: '',
     adjuntos: [],         // ids de archivos
+    modo: 'general',      // modo de trabajo elegido
 };
 
+/** Modos de trabajo: [clave, icono, nombre, texto de ayuda, placeholder]. */
+const MODOS = [
+    ['general', 'sparkles', 'Asistente', 'Respuestas directas sobre tus materias, tareas y notas.', 'Pregúntale lo que quieras…'],
+    ['profesor', 'cap', 'Profesor', 'Te guía paso a paso con preguntas y pistas, sin darte la respuesta de una vez.', '¿Qué quieres aprender hoy?'],
+    ['investigar', 'globe', 'Investigar', 'Busca en internet varias fuentes y te arma un informe con referencias APA.', '¿Qué tema investigo?'],
+    ['trabajos', 'pencil', 'Trabajos', 'Esquemas, borradores, revisión de redacción y citas para tus trabajos.', 'Consigna del trabajo o tu texto…'],
+    ['examen', 'target', 'Examen', 'Te hace preguntas de práctica una a una, te corrige y te dice qué reforzar.', '¿De qué es tu examen?'],
+];
+const modoDe = (k) => MODOS.find(m => m[0] === k) || MODOS[0];
+
+// [icono, texto, modo]
 const SUGERENCIAS = [
-    ['tasks', '¿Qué tengo pendiente esta semana y qué debería hacer primero?'],
-    ['award', '¿Cuánto necesito en lo que queda de cada materia para sacar B?'],
-    ['calendar', 'Hazme un plan de estudio para mi próximo examen.'],
-    ['layers', 'Revisa mis notas más recientes y créame tarjetas de repaso.'],
-    ['history', '¿Cómo va mi índice acumulado y qué puedo mejorar?'],
-    ['sparkles', 'Explícame con ejemplos el tema que más me cuesta.'],
+    ['tasks', '¿Qué tengo pendiente esta semana y qué debería hacer primero?', 'general'],
+    ['award', '¿Cuánto necesito en lo que queda de cada materia para sacar B?', 'general'],
+    ['cap', 'Enséñame paso a paso el tema que más me cuesta de mis materias.', 'profesor'],
+    ['globe', 'Investiga un tema de mi carrera y dame un resumen con fuentes en APA.', 'investigar'],
+    ['pencil', 'Ayúdame a hacer el esquema de mi próximo trabajo escrito.', 'trabajos'],
+    ['target', 'Hazme un simulacro de mi próximo examen.', 'examen'],
 ];
 
 export default {
@@ -134,10 +146,14 @@ function renderChat() {
                     return a ? `<span class="att-chip">${icon(iconoArchivo(a.nombre, a.mime))}<span>${esc(a.nombre)}</span>
                         <button type="button" class="icon-btn sm" data-action="chat-quitar-adjunto" data-id="${id}" aria-label="Quitar ${esc(a.nombre)}">${icon('x')}</button></span>` : '';
                 }).join('')}</div>` : ''}
+                <div class="chat-modes" role="radiogroup" aria-label="Modo del asistente">
+                    ${MODOS.map(([k, ic, nombre, ayuda]) => `<button type="button" class="chat-mode ${chat.modo === k ? 'is-active' : ''}" role="radio" aria-checked="${chat.modo === k}" data-action="chat-modo" data-modo="${k}" title="${esc(ayuda)}">${icon(ic)}<span>${nombre}</span></button>`).join('')}
+                </div>
+                ${chat.modo !== 'general' ? `<p class="chat-mode-help">${icon(modoDe(chat.modo)[1])}<span>${esc(modoDe(chat.modo)[3])}</span></p>` : ''}
                 <div class="chat-input-row">
                     <button class="icon-btn" type="button" data-action="chat-adjuntar" aria-label="Adjuntar PDF o imagen de tus materias" title="Adjuntar PDF o imagen">${icon('paperclip')}</button>
                     <label class="sr-only" for="chatInput">Escribe tu mensaje</label>
-                    <textarea id="chatInput" rows="1" maxlength="8000" placeholder="Pregúntale lo que quieras sobre tus materias, tareas o notas…"></textarea>
+                    <textarea id="chatInput" rows="1" maxlength="8000" placeholder="${esc(modoDe(chat.modo)[4])}"></textarea>
                     ${chat.enviando
                         ? `<button class="icon-btn send-btn is-stop" type="button" data-action="chat-detener" aria-label="Detener respuesta" title="Detener">${icon('pause')}</button>`
                         : `<button class="icon-btn send-btn" type="submit" aria-label="Enviar" title="Enviar (Enter)">${icon('send')}</button>`}
@@ -153,14 +169,15 @@ function bienvenida() {
     return `<div class="chat-welcome">
         <span class="chat-avatar lg">${icon('sparkles')}</span>
         <h2 class="display">Hola${nombre ? `, ${esc(nombre)}` : ''}. <em>¿En qué te ayudo?</em></h2>
-        <p>Conozco tus materias, horario, tareas, calificaciones y notas. También puedo leer los PDF que adjuntes y prepararte tareas o tarjetas para que las confirmes.</p>
-        <div class="chat-suggestions">${SUGERENCIAS.map(([ic, t]) => `<button type="button" class="suggestion" data-action="chat-sugerencia" data-texto="${esc(t)}">${icon(ic)}<span>${esc(t)}</span></button>`).join('')}</div>
+        <p>Conozco tus materias, horario, tareas, calificaciones y notas. Puedo explicarte como un profesor, investigar en internet con fuentes, ayudarte con tus trabajos, prepararte para exámenes y leer los PDF que adjuntes. Elige un modo abajo o escríbeme directamente.</p>
+        <div class="chat-suggestions">${SUGERENCIAS.map(([ic, t, modo]) => `<button type="button" class="suggestion" data-action="chat-sugerencia" data-texto="${esc(t)}" data-modo="${modo}">${icon(ic)}<span>${esc(t)}</span></button>`).join('')}</div>
     </div>`;
 }
 
 function burbuja(m) {
     if (m.rol === 'usuario') {
         return `<div class="msg msg-user">
+            ${m.modo && m.modo !== 'general' ? `<span class="msg-mode">${icon(modoDe(m.modo)[1])}${esc(modoDe(m.modo)[2])}</span>` : ''}
             ${m.adjuntos?.length ? `<div class="msg-attachments">${m.adjuntos.map(a => `<span class="att-chip sm">${icon(iconoArchivo(a.nombre, a.mime))}<span>${esc(a.nombre)}</span></span>`).join('')}</div>` : ''}
             <div class="msg-bubble">${esc(m.texto).replace(/\n/g, '<br>')}</div>
         </div>`;
@@ -170,6 +187,7 @@ function burbuja(m) {
         <div class="msg-body">
             ${herramientasHTML(m.herramientas)}
             <div class="md">${markdown(m.texto)}</div>
+            ${fuentesHTML(m.fuentes)}
             ${(m.propuestas || []).map(propuestaHTML).join('')}
             ${m.aviso ? `<p class="form-alert">${icon('alert')}<span>${esc(m.aviso)}</span></p>` : ''}
         </div>
@@ -187,7 +205,8 @@ function burbujaEnCurso() {
 function cuerpoEnCurso() {
     const e = chat.enviando;
     return `${herramientasHTML(e.herramientas, true)}
-        ${e.texto ? `<div class="md">${markdown(e.texto)}</div>` : `<div class="typing" aria-label="Pensando"><span></span><span></span><span></span><em>${e.herramientas.length ? 'Analizando tus datos…' : 'Pensando…'}</em></div>`}
+        ${e.texto ? `<div class="md">${markdown(e.texto)}</div>` : `<div class="typing" aria-label="Pensando"><span></span><span></span><span></span><em>${e.herramientas.some(t => /internet|web/i.test(t)) ? 'Investigando…' : e.herramientas.length ? 'Analizando tus datos…' : 'Pensando…'}</em></div>`}
+        ${fuentesHTML(e.fuentes)}
         ${e.propuestas.map(propuestaHTML).join('')}
         ${e.aviso ? `<p class="form-alert">${icon('alert')}<span>${esc(e.aviso)}</span></p>` : ''}
         ${e.error ? `<p class="form-alert is-danger">${icon('alert')}<span>${esc(e.error)}</span></p>` : ''}`;
@@ -195,7 +214,17 @@ function cuerpoEnCurso() {
 
 function herramientasHTML(lista = [], vivo = false) {
     if (!lista.length) return '';
-    return `<ul class="tool-trace">${lista.map((t, i) => `<li class="${vivo && i === lista.length - 1 && !chat.enviando?.texto ? 'is-live' : ''}">${icon('database')}${esc(t)}</li>`).join('')}</ul>`;
+    return `<ul class="tool-trace">${lista.map((t, i) => `<li class="${vivo && i === lista.length - 1 && !chat.enviando?.texto ? 'is-live' : ''}">${icon(/internet|web/i.test(t) ? 'globe' : 'database')}${esc(t)}</li>`).join('')}</ul>`;
+}
+
+/** Fuentes web citadas en la respuesta. */
+function fuentesHTML(lista = []) {
+    if (!lista?.length) return '';
+    const dominio = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
+    return `<details class="sources" ${lista.length <= 4 ? 'open' : ''}>
+        <summary>${icon('globe')}${lista.length === 1 ? '1 fuente' : `${lista.length} fuentes`}</summary>
+        <ol>${lista.map(f => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener noreferrer"><strong>${esc(f.titulo || dominio(f.url))}</strong><small>${esc(dominio(f.url))}</small></a></li>`).join('')}</ol>
+    </details>`;
 }
 
 function propuestaHTML(p) {
@@ -263,9 +292,10 @@ async function enviar(texto) {
     }
     const conv = chat.activa;
     const adjuntos = chat.adjuntos.map(id => db.archivos.find(a => a.id === id)).filter(Boolean);
-    chat.mensajes.push({ rol: 'usuario', texto, adjuntos: adjuntos.map(a => ({ archivoId: a.id, nombre: a.nombre, mime: a.mime })) });
+    const modo = chat.modo;
+    chat.mensajes.push({ rol: 'usuario', texto, modo, adjuntos: adjuntos.map(a => ({ archivoId: a.id, nombre: a.nombre, mime: a.mime })) });
     const controlador = new AbortController();
-    chat.enviando = { texto: '', herramientas: [], propuestas: [], aviso: null, error: null, controlador };
+    chat.enviando = { texto: '', herramientas: [], propuestas: [], fuentes: [], aviso: null, error: null, controlador };
     const ids = [...chat.adjuntos];
     chat.borrador = '';
     chat.adjuntos = [];
@@ -274,12 +304,13 @@ async function enviar(texto) {
 
     let fallo = null;
     try {
-        await chatStream(conv, { texto, archivos: ids }, (ev, d) => {
+        await chatStream(conv, { texto, archivos: ids, modo }, (ev, d) => {
             const e = chat.enviando;
             if (!e) return;
             if (ev === 'texto') e.texto += d.delta;
             else if (ev === 'herramienta') { if (!e.herramientas.includes(d.etiqueta)) e.herramientas.push(d.etiqueta); }
             else if (ev === 'propuesta') e.propuestas.push(d);
+            else if (ev === 'fuentes') (d.fuentes || []).forEach(f => { if (!e.fuentes.some(x => x.url === f.url)) e.fuentes.push(f); });
             else if (ev === 'aviso') e.aviso = d.mensaje;
             else if (ev === 'error') e.error = d.mensaje;
             else if (ev === 'fin') {
@@ -380,7 +411,13 @@ function montar(vista) {
 accion({
     'chat-nueva': () => { if (!chat.enviando) { chat.activa = null; chat.mensajes = []; render(); $('#chatInput')?.focus(); } },
     'chat-abrir': (el) => abrir(idDe(el)),
-    'chat-sugerencia': (el) => enviar(el.dataset.texto),
+    'chat-sugerencia': (el) => { if (el.dataset.modo) chat.modo = el.dataset.modo; enviar(el.dataset.texto); },
+    'chat-modo': (el) => {
+        chat.borrador = $('#chatInput')?.value ?? chat.borrador;
+        chat.modo = el.dataset.modo;
+        render();
+        $('#chatInput')?.focus();
+    },
     'chat-detener': () => chat.enviando?.controlador.abort(),
     'chat-adjuntar': elegirAdjuntos,
     'chat-quitar-adjunto': (el) => { chat.adjuntos = chat.adjuntos.filter(id => id !== idDe(el)); render(); },

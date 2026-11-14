@@ -1,9 +1,11 @@
 /* Formularios de creación y edición (se abren en el diálogo principal). */
-import { $, $$, esc, fmtDuration, fmtTime, toISO, addDays, DIAS, DIAS_CORTO, WEEK, fmtBytes } from './util.js';
+import { $, $$, esc, fmtDuration, fmtTime, toISO, addDays, DIAS, DIAS_CORTO, WEEK, fmtBytes, fmtRelativo } from './util.js';
+import { markdown } from './markdown.js';
+import { accion, idDe } from './acciones.js';
 import { icon, iconoArchivo } from './iconos.js';
 import { api } from './api.js';
 import { P,
-    db, ui, HUES, HUE_LABEL, hueOf, nextFreeHue, materiaName, overlapsFor, fmtRange, PRIO_LABEL, REC_LABEL, archivosDeTarea, reemplazar,
+    db, ui, app, mc, HUES, HUE_LABEL, hueOf, nextFreeHue, materiaName, overlapsFor, fmtRange, PRIO_LABEL, REC_LABEL, archivosDeTarea, reemplazar,
 } from './estado.js';
 import { openForm, field, toast, toastError, render } from './ui.js';
 import { materiaOptions, CATEGORIAS } from './componentes.js';
@@ -274,6 +276,54 @@ export async function crearPlanRepaso(id) {
 /* =====================================================================
    NOTA
    ===================================================================== */
+/* ---------- Ver una nota completa ---------- */
+export function verNota(n) {
+    if (!n) return;
+    const fechas = [`Creada ${fmtRelativo(n.creadoEn)}`, n.actualizadoEn ? `editada ${fmtRelativo(n.actualizadoEn)}` : ''].filter(Boolean).join(' · ');
+    const tarjetas = tarjetasDeNota(n).length;
+    openForm({
+        eyebrow: `<span class="mat-tag" style="${mc(n.materiaId)}"><i class="dot"></i><span>${esc(materiaName(n.materiaId))}</span></span>`,
+        title: esc(n.titulo),
+        desc: esc(fechas),
+        wide: true,
+        body: `<div class="md note-view" style="${mc(n.materiaId)}">${n.contenido?.trim() ? markdown(n.contenido) : '<p class="muted">Esta nota no tiene contenido.</p>'}</div>`,
+        submit: `${icon('pencil')}Editar`,
+        cancel: 'Cerrar',
+        footLeft: `
+            <button class="icon-btn" type="button" data-action="copiar-nota" data-id="${n.id}" aria-label="Copiar texto" title="Copiar texto">${icon('copy')}</button>
+            <button class="icon-btn" type="button" data-action="share" data-tipo="nota" data-id="${n.id}" aria-label="Compartir en un grupo" title="Compartir en un grupo">${icon('share')}</button>
+            ${tarjetas ? `<button class="icon-btn" type="button" data-action="nota-tarjetas" data-id="${n.id}" aria-label="Crear ${tarjetas} tarjetas de repaso" title="Crear tarjetas de repaso">${icon('layers')}</button>` : ''}
+            ${app.ia ? `<a class="icon-btn" href="#/asistente?nota=${n.id}" aria-label="Usar con el asistente IA" title="Resumir o crear tarjetas con IA">${icon('sparkles')}</a>` : ''}
+            <button class="icon-btn danger" type="button" data-action="delete" data-type="nota" data-id="${n.id}" aria-label="Eliminar nota" title="Eliminar">${icon('trash')}</button>`,
+        // «Editar» reutiliza la misma ventana: se abre el formulario y esta no se cierra
+        onSubmit: () => { openNotaForm(n); return false; },
+    });
+}
+
+accion({
+    'ver-nota': (el, e) => {
+        // Los botones y enlaces de la tarjeta hacen lo suyo; seleccionar texto tampoco abre
+        if (e?.target?.closest('button, a, input') && e.target.closest('button, a, input') !== el) return;
+        if (String(window.getSelection?.() || '').trim()) return;
+        verNota(db.anotaciones.find(x => x.id === idDe(el)));
+    },
+    'copiar-nota': async (el) => {
+        const n = db.anotaciones.find(x => x.id === idDe(el));
+        if (!n) return;
+        try {
+            await navigator.clipboard.writeText(`${n.titulo}\n\n${n.contenido || ''}`);
+            toast({ type: 'success', title: 'Nota copiada' });
+        } catch { toast({ type: 'error', title: 'No se pudo copiar', msg: 'Tu navegador no permitió acceder al portapapeles.' }); }
+    },
+});
+
+// Teclado: Enter o Espacio sobre una tarjeta de nota la abre
+document.addEventListener('keydown', (e) => {
+    if ((e.key !== 'Enter' && e.key !== ' ') || !e.target.matches?.('.note[data-action="ver-nota"]')) return;
+    e.preventDefault();
+    verNota(db.anotaciones.find(x => x.id === idDe(e.target)));
+});
+
 export function openNotaForm(n = null, preset = {}) {
     const v = n || { titulo: '', contenido: '', materiaId: preset.materiaId ?? (ui.noteMateria && ui.noteMateria !== 'general' ? Number(ui.noteMateria) : materiaPreferida()) };
     openForm({

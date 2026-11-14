@@ -172,7 +172,7 @@ hPanel → Avanzado → **Cron Jobs** → comando personalizado, **cada minuto**
 
 ### Actualizar a una versión nueva
 
-1. En tu PC, sube `VERSION` en `sw.js` y genera el paquete **sin** `--con-datos`.
+1. En tu PC, **cambia `VERSION` en `sw.js`** (por ejemplo `edugestor-v7` → `edugestor-v8`) y genera el paquete **sin** `--con-datos`.
 2. En Hostinger, extrae el zip encima de lo existente. No toca `config.local.php` ni `storage/`.
 3. Si el esquema cambió, borra `storage/instalado.lock`, abre `install.php` con los mismos datos de la base (crea las tablas nuevas sin tocar las existentes) y vuelve a borrar `install.php`.
 
@@ -397,9 +397,11 @@ export default {
 1. Crea `js/vistas/mi-vista.js` con la interfaz anterior.
 2. Añádela a `RUTAS` en `js/rutas.js` (título, icono y grupo de la barra lateral).
 3. Impórtala en `VISTAS` dentro de `js/main.js`.
-4. Agrega el archivo a la lista `SHELL` de `sw.js` y sube la versión de `VERSION`, para que funcione sin conexión.
+4. Agrega el archivo a la lista `SHELL` de `sw.js` y cambia `VERSION`, para que funcione sin conexión.
 
-> **Al publicar cambios en JS o CSS**, sube `VERSION` en `sw.js` (por ejemplo `edugestor-v4`). Si no, los navegadores que ya abrieron la app pueden seguir usando la versión guardada en caché.
+> **Publicar una versión nueva: cambia `VERSION` en `sw.js`** (por ejemplo `edugestor-v7` → `edugestor-v8`) y súbelo junto con los archivos modificados. Sin ese cambio, nadie recibe la actualización. Cada versión vive en su propia caché, así nunca se mezclan archivos de dos versiones.
+>
+> En los dispositivos, `js/actualizacion.js` busca versiones nuevas al abrir la app, al volver a ella, al recuperar conexión y cada 15 minutos (y con **Ajustes → Datos → Buscar actualizaciones**, que también muestra la versión en uso). La nueva se descarga en segundo plano y aparece la barra **«Hay una versión nueva · Actualizar»**; al pulsarla toma el control y la página se recarga una vez. Con «Más tarde», la barra vuelve a aparecer la próxima vez que se abra la app.
 
 ---
 
@@ -455,6 +457,18 @@ Para probarlo a mano: `C:\xampp\php\php.exe cron\recordatorios.php`.
 ## Asistente con IA
 
 Usa el **SDK oficial de Anthropic para PHP** (`anthropic-ai/sdk`) con el modelo `claude-opus-5-5`.
+
+**Modos de trabajo** (botones sobre el cuadro de texto; el modo viaja en el bloque `<contexto>` de cada mensaje, ver `CHAT_MODOS` en `api/rutas/chat.php`):
+
+| Modo | Qué hace |
+|---|---|
+| Asistente | Respuestas directas sobre materias, tareas, notas y cualquier tema |
+| Profesor | Tutor socrático: guía con preguntas y pistas, corrige y comprueba lo aprendido |
+| Investigar | Busca en internet varias fuentes y entrega un informe con referencias APA 7 |
+| Trabajos | Consigna, esquema, borradores, revisión de redacción y citas |
+| Examen | Preguntas de práctica una a una, corrección, puntuación y temas a reforzar |
+
+**Investigación web:** usa las herramientas del servidor de Anthropic `web_search_20260209` y `web_fetch_20260209` (con filtrado dinámico). Se controla en `config.php → ia`: `web` (activar/desactivar), `web_max_busquedas` y `web_max_paginas` por respuesta. Cada búsqueda tiene un coste aparte de los tokens (consulta los precios vigentes de Anthropic); si se desactiva, el asistente responde con lo que ya sabe. Las fuentes aparecen como enlaces en la respuesta y, cuando hay citas, en la lista «Fuentes».
 
 **Para activarlo:**
 1. `composer install`, si no lo hiciste.
@@ -536,4 +550,4 @@ Las pruebas se ejecutaron durante el desarrollo y **no forman parte del reposito
 | "La clave de la API de Anthropic no es válida" | Clave mal copiada o revocada | Copia la clave completa, sin espacios |
 | "Falta instalar las dependencias (composer install)" | No existe `vendor/` | Ejecuta `composer install` |
 | No llegan notificaciones con la app cerrada | El cron no está programado, falta permiso o no hay HTTPS | Programa el cron, revisa el permiso del sitio y usa `localhost` o HTTPS |
-| Los cambios de JS o CSS no se ven | El service worker sirve la versión en caché | Sube `VERSION` en `sw.js` o recarga dos veces |
+| Los cambios de JS o CSS no se ven | No cambió `VERSION` en `sw.js` | Cambia `VERSION`, súbelo y pulsa «Actualizar» en la barra (o Ajustes → Buscar actualizaciones) |

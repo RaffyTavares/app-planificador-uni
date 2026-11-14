@@ -5,7 +5,10 @@
     "lang": "es",
     "start_url": "./#/inicio",
     "scope": "./",
+    "id": "./",
     "display": "standalone",
+    "display_override": ["standalone"],
+    "orientation": "portrait",
     "background_color": "#0b1215",
     "theme_color": "#0b1215",
     "icons": [

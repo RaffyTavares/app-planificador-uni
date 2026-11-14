@@ -45,7 +45,7 @@ function listaHTML() {
     }
     return `<div class="notes">${lista.map(n => {
         const tarjetas = tarjetasDeNota(n).length;
-        return `<article class="note" style="${mc(n.materiaId)}">
+        return `<article class="note is-clickable" style="${mc(n.materiaId)}" data-action="ver-nota" data-id="${n.id}" tabindex="0" role="button" aria-label="Abrir nota: ${esc(n.titulo)}">
             <div class="note-head">
                 <span class="mat-tag"><i class="dot"></i><span>${esc(materiaName(n.materiaId))}</span></span>
                 <div class="row-actions">

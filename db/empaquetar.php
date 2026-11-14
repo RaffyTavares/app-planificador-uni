@@ -31,6 +31,10 @@ if ($conDatos) {
     echo "\n";
 }
 
+// Versión del service worker: la defines tú en sw.js (const VERSION). Cámbiala en cada publicación.
+preg_match("/const VERSION = '([^']*)';/", file_get_contents("$raiz/sw.js"), $mv);
+echo '• Versión de la app (sw.js): ' . ($mv[1] ?? '¿?') . "  ← cámbiala si publicas cambios\n";
+
 // Qué se incluye
 $archivos = ['index.html', 'styles.css', 'sw.js', 'manifest.webmanifest', 'logo.jpeg', 'install.php', 'config.php',
     '.htaccess', 'README.md', 'composer.json', 'composer.lock', 'storage/.htaccess', 'storage/index.html'];

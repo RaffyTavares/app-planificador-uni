@@ -81,7 +81,7 @@ export const esperar = (ms) => new Promise(r => setTimeout(r, ms));
  * onSubmit(datos, form) puede ser async; si lanza un ErrorApi con `campo`,
  * el error se muestra junto a ese campo. Devuelve false para mantener abierto.
  */
-export function openForm({ eyebrow, title, desc = '', body, submit = 'Guardar', danger = false, footLeft = '', wide = false, onSubmit, onOpen }) {
+export function openForm({ eyebrow, title, desc = '', body, submit = 'Guardar', cancel = 'Cancelar', danger = false, footLeft = '', wide = false, onSubmit, onOpen }) {
     const dlg = $('#formDialog');
     dlg.classList.toggle('is-wide', wide);
     dlg.innerHTML = `<form class="dlg" novalidate>
@@ -96,7 +96,7 @@ export function openForm({ eyebrow, title, desc = '', body, submit = 'Guardar', 
         ${body ? `<div class="dlg-body"><div class="form">${body}</div><p class="form-error" role="alert"></p></div>` : '<p class="form-error dlg-body" role="alert"></p>'}
         <footer class="dlg-foot">
             ${footLeft ? `<div class="dlg-foot-left">${footLeft}</div>` : ''}
-            <button class="btn btn-ghost" type="button" data-close>Cancelar</button>
+            <button class="btn btn-ghost" type="button" data-close>${cancel}</button>
             ${submit ? `<button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" type="submit">${submit}</button>` : ''}
         </footer>
     </form>`;
